@@ -125,7 +125,7 @@ dso_framework/
 
 ```bash
 # Clone the repository
-git clone https://github.com/garrjo/dso_framework.git
+git clone https://github.com/garrjo/dsoframework.git
 cd dso_framework
 
 # Run SPARC validation
