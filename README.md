@@ -1,7 +1,6 @@
 # E is Prime
-## DOI
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18118894.svg)](https://doi.org/10.5281/zenodo.18118894)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18119124.svg)](https://doi.org/10.5281/zenodo.18119124)
 ## The Drag-Scale-Object (DSO) Framework
 
 **A foundational framework proposing that Energy (E) is the sole fundamental constituent of physical reality.**
