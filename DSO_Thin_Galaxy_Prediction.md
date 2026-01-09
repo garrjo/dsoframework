@@ -1,4 +1,4 @@
-# DSO Prediction: Why Thin Galaxies Stay Thin
+energy primacy; mass-energy equivalence; dark matter alternative; radial acceleration relation; Planck constant derivation; Born rule derivation; galaxy rotation curves; cosmic microwave background; quantum foundations; black holes; modified gravity; cosmology# DSO Prediction: Why Thin Galaxies Stay Thin
 
 **A Testable Formula from the Drag-Scale-Object Framework**
 
@@ -78,10 +78,10 @@ Estimated surface density: Σ ≈ 50-100 M☉/pc²
 
 Ratio: 2πGΣ / g† ≈ 0.16-0.32
 
-ν(0.16) ≈ 1.7
-ν(0.32) ≈ 1.5
+ν(0.16) ≈ 3.0
+ν(0.32) ≈ 2.3
 
-**Result:** Vertical restoring force boosted by factor ~1.5-2×
+**Result:** Vertical restoring force boosted by factor ~2-3×
 
 This allows thin disk stability without fine-tuning velocity dispersion.
 
