@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmogenesis — Scale Emergence from Energy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #050510;
+  --e-color: #4488ff;
+  --pool-color: #6644cc;
+  --threshold-color: #ff6622;
+  --lock-color: #ffaa00;
+  --text: #c8ccd8;
+  --label: #8890a8;
+  --accent: #4488ff;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+header {
+  text-align: center;
+  padding: 30px 20px 12px;
+  position: relative; z-index: 10;
+}
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 4.5vw, 48px);
+  font-weight: 400; color: #fff;
+  letter-spacing: 0.02em; margin-bottom: 6px;
+}
+header h1 em { color: var(--accent); font-style: italic; }
+header .subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--label);
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
+header .equation {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; color: var(--accent);
+  margin-top: 8px; opacity: 0.7;
+}
+
+.controls {
+  display: flex; justify-content: center; align-items: center;
+  gap: 12px; padding: 12px 20px;
+  position: sticky; top: 0; z-index: 100;
+  background: linear-gradient(180deg, var(--bg) 60%, transparent);
+}
+.controls button {
+  background: rgba(68,136,255,0.12);
+  border: 1px solid rgba(68,136,255,0.3);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; padding: 7px 16px;
+  border-radius: 4px; cursor: pointer;
+  transition: all 0.3s; letter-spacing: 0.05em;
+}
+.controls button:hover {
+  background: rgba(68,136,255,0.25);
+  border-color: var(--accent);
+}
+.controls button.active {
+  background: var(--accent); color: #fff;
+}
+.controls button:disabled {
+  opacity: 0.3; cursor: default;
+}
+.stage-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--label);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  min-width: 180px; text-align: center;
+}
+
+.canvas-wrap {
+  position: relative; width: 100%;
+  max-width: 900px; margin: 0 auto;
+  aspect-ratio: 16/10;
+}
+canvas { width: 100%; height: 100%; display: block; }
+
+.timeline {
+  display: flex; justify-content: center;
+  gap: 0; padding: 20px 20px 10px;
+  max-width: 800px; margin: 0 auto;
+}
+.timeline-dot {
+  flex: 1; text-align: center;
+  position: relative; cursor: pointer;
+}
+.timeline-dot::before {
+  content: ''; display: block;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  margin: 0 auto 6px; transition: all 0.4s;
+}
+.timeline-dot.active::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+.timeline-dot.passed::before {
+  background: rgba(68,136,255,0.4);
+  border-color: rgba(68,136,255,0.5);
+}
+.timeline-dot::after {
+  content: ''; position: absolute;
+  top: 5px; right: -50%;
+  width: 100%; height: 2px;
+  background: rgba(255,255,255,0.08); z-index: -1;
+}
+.timeline-dot:last-child::after { display: none; }
+.timeline-dot.passed::after { background: rgba(68,136,255,0.3); }
+.timeline-dot span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--label);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.timeline-dot.active span { color: var(--accent); }
+
+.narrative {
+  max-width: 700px; margin: 0 auto; padding: 0 24px;
+}
+.narrative-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; padding: 24px 28px;
+  margin-bottom: 16px; position: relative;
+  overflow: hidden;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.narrative-card.visible { opacity: 1; }
+.narrative-card .phase-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--accent);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.narrative-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 400;
+  color: #fff; margin-bottom: 10px;
+}
+.narrative-card .body-text {
+  font-size: 14px; line-height: 1.7;
+  color: var(--text); min-height: 3em;
+}
+.narrative-card .body-text .word {
+  opacity: 0; transition: opacity 0.18s ease;
+  display: inline;
+}
+.narrative-card .body-text .word.visible { opacity: 1; }
+.narrative-card .eq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--accent);
+  background: rgba(68,136,255,0.06);
+  padding: 8px 14px; border-radius: 4px;
+  margin: 12px 0; display: inline-block;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.narrative-card .eq.visible { opacity: 1; }
+.narrative-card .gradient-viz {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; letter-spacing: 2px;
+  margin: 12px 0; line-height: 1.4;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.narrative-card .gradient-viz.visible { opacity: 1; }
+.gv-base { color: #334466; }
+.gv-pool { color: var(--pool-color); }
+.gv-trans { color: var(--threshold-color); }
+.gv-matter { color: var(--lock-color); }
+
+.reading-progress {
+  position: absolute; bottom: 0; left: 0;
+  height: 2px; width: 0;
+  background: var(--accent);
+  border-radius: 0 1px 0 0;
+  box-shadow: 0 0 8px rgba(68,136,255,0.4);
+  transition: width 0.15s linear;
+}
+
+.advance-bar {
+  margin-top: 14px; height: 3px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px; overflow: hidden;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.advance-bar.visible { opacity: 1; }
+.advance-bar .fill {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--accent), rgba(68,136,255,0.4));
+  border-radius: 2px;
+  transition: width 0.05s linear;
+}
+.advance-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--label);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  text-align: center; margin-top: 6px;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.advance-label.visible { opacity: 1; }
+
+.voice-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: rgba(255,255,255,0.2);
+  text-align: center; padding: 4px;
+  letter-spacing: 0.08em;
+}
+
+footer {
+  text-align: center; padding: 30px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,0.15);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Cosmo<em>genesis</em></h1>
+  <div class="subtitle">Scale Emergence from Energy</div>
+  <div class="equation">E = DC² → αΩ = D·Ω·O</div>
+</header>
+
+<div class="controls">
+  <button id="btnPrev">← PREV</button>
+  <div class="stage-label" id="stageLabel">STAGE 1 / 7</div>
+  <button id="btnNext">NEXT →</button>
+  <button id="btnPlay">▶ NARRATE</button>
+</div>
+
+<div class="canvas-wrap">
+  <canvas id="canvas"></canvas>
+</div>
+
+<div class="timeline" id="timeline"></div>
+<div class="narrative" id="narrative"></div>
+<div class="voice-status" id="voiceStatus"></div>
+
+<footer>ΞĐ (Seeth) Framework — Joe William Garrett — VaultSync Solutions Inc. — 2026</footer>
+
+<script>
+// ============================================================
+// STAGES
+// ============================================================
+const stages = [
+  {
+    name: "E Is Prime", timelineLabel: "E Is", phase: "Before Scale",
+    title: "E Is Prime",
+    body: "Energy is the fundamental constituent of reality. Not matter. Not spacetime. Not information. Energy. It does not begin. The question, what came before Energy, is malformed. Before requires time, and time requires Drag to Drag relationships. Before Drag exists, there is no time, no sequence, no before. Energy simply is.",
+    eq: "E simply is.",
+    speak: "Energy is the fundamental constituent of reality. Not matter. Not spacetime. Not information. Energy. It does not begin. The question, what came before energy, is malformed. Before, requires time. And time requires drag-to-drag relationships. Before drag exists, there is no time, no sequence, no before. Energy simply is."
+  },
+  {
+    name: "Perturbations", timelineLabel: "Perturb", phase: "Pre-Geometric State",
+    title: "The First Gradients",
+    body: "Energy has one intrinsic dynamic: it pools. Energy attracts Energy is not a force acting across space — space doesn't exist yet. It is the nature of Energy to concentrate. Higher density draws more Energy. Over intervals that cannot be measured, Energy develops perturbations. Regions where density is slightly higher or lower than baseline. These are the first gradients.",
+    eq: "dρ/dt = α · ρ  (self-reinforcing)",
+    speak: "Energy has one intrinsic dynamic: it pools. Energy attracts energy. This is not a force acting across space — space doesn't exist yet. It is the nature of energy to concentrate. Higher density draws more energy. Over intervals that cannot be measured, energy develops perturbations. Regions where density is slightly higher, or lower, than baseline. These are the first gradients."
+  },
+  {
+    name: "Concentration", timelineLabel: "Pool", phase: "Slow Accumulation",
+    title: "E Pools and Concentrates",
+    body: "Perturbations deepen. Gradients steepen. The process is self-reinforcing: denser regions pull Energy from less dense regions, becoming denser still. The concentration profile becomes exponential — steep at center, tapering outward. This is the natural steady-state of self-reinforcing concentration with a finite energy budget.",
+    eq: "ρ(r) = ρ₀ · exp(−r/r₀)",
+    speak: "Perturbations deepen. Gradients steepen. The process is self-reinforcing: denser regions pull energy from less dense regions, becoming denser still. The concentration profile becomes exponential — steep at center, tapering outward. This is the natural steady state of self-reinforcing concentration, with a finite energy budget."
+  },
+  {
+    name: "Threshold", timelineLabel: "Threshold", phase: "Quarter-Density Lock",
+    title: "The Threshold Crossing",
+    body: "Concentration approaches the lock condition: where local density exceeds one quarter of peak density. This is the dimensional cost of maintaining a concentration in three-plus-one spacetime — the point where Energy can resist dilution into the surrounding four degrees of freedom. At this threshold, a phase transition occurs.",
+    eq: "ρ_local > ρ_peak / 4  →  E locks into D",
+    speak: "Concentration approaches the lock condition: where local density exceeds one quarter of peak density. This is the dimensional cost of maintaining a concentration in three-plus-one spacetime — the point where energy can resist dilution into the surrounding four degrees of freedom. At this threshold, a phase transition occurs."
+  },
+  {
+    name: "The First Sync", timelineLabel: "Sync", phase: "The Big Bang",
+    title: "The First Sync",
+    body: "A perturbation crosses threshold. Drag locks into existence — the first stable configuration. Scale is born at the lock point: geometry, distance, direction, dimension, and duration all come into being. Approximately 61.8% of Energy locks. 38.2% casts off as propagating energy. This is what standard cosmology calls the Big Bang. It is not creation from nothing. It is the first time Energy locked into Drag.",
+    eq: "Lock: φ⁻¹ ≈ 61.8%  |  Cast-off: 38.2%",
+    speak: "A perturbation crosses threshold. Drag locks into existence — the first stable configuration. Scale is born at the lock point: geometry, distance, direction, dimension, and duration, all come into being. Approximately 61.8 percent of energy locks. 38.2 percent casts off as propagating energy. This is what standard cosmology calls the Big Bang. It is not creation from nothing. It is the first time energy locked into drag."
+  },
+  {
+    name: "The Cascade", timelineLabel: "Cascade", phase: "Scale Propagation",
+    title: "The Sync Cascade",
+    body: "Each sync event casts off energy that hits neighboring pools. Those pools, pushed past threshold, sync in turn. Scale spreads like crystallization through a supersaturated solution. The cascade terminates when cast-off density falls below the quarter-density threshold. This fixes the cascade depth and determines the baryon fraction. Pool to locked ratio: 5.13, predicting dark matter density to 98.6% agreement with Planck.",
+    eq: "Pool/Locked = 5.13  →  Ω_dm predicted to 98.6%",
+    speak: "Each sync event casts off energy that hits neighboring pools. Those pools, pushed past threshold, sync in turn. Scale spreads, like crystallization through a supersaturated solution. The cascade terminates when cast-off density falls below the quarter-density threshold. This fixes the cascade depth, and determines the baryon fraction. Pool to locked ratio: 5.13. Predicting dark matter density to 98.6 percent agreement with Planck."
+  },
+  {
+    name: "The Gradient", timelineLabel: "Gradient", phase: "The Living Fossil",
+    title: "The Energy Gradient Today",
+    body: "The gradient structure persists in every galaxy. Baseline Energy, which we call dark energy. Concentrated pooling, which we call dark matter. Approaching conversion. And locked baryonic emission — visible matter. The entire line is physical. We measure only the asterisks. The critical acceleration g-dagger marks where baryonic emission drops below the sub-threshold gradient — not a regime change, but a detection limit.",
+    eq: "g† = (2/φ) × (c²/R_cosmic)",
+    gradient: true,
+    speak: "The gradient structure persists in every galaxy. Baseline energy — which we call dark energy. Concentrated pooling — which we call dark matter. Approaching conversion. And locked baryonic emission — visible matter. The entire line is physical. We measure only the asterisks. The critical acceleration g-dagger marks where baryonic emission drops below the sub-threshold gradient. Not a regime change. But a detection limit."
+  }
+];
+
+// ============================================================
+// VOICE
+// ============================================================
+let chosenVoice = null;
+function pickVoice() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return;
+  const prefs = ['microsoft jenny','microsoft aria','microsoft zira','google us english',
+    'google uk english female','samantha','karen','moira','fiona','tessa','female'];
+  const en = voices.filter(v => v.lang.startsWith('en'));
+  for (const p of prefs) { const m = en.find(v => v.name.toLowerCase().includes(p)); if (m) { chosenVoice = m; break; } }
+  if (!chosenVoice) chosenVoice = en.find(v => /female|woman|zira|samantha|jenny|aria|karen/i.test(v.name)) || en[0] || voices[0];
+  document.getElementById('voiceStatus').textContent = chosenVoice ? 'VOICE: ' + chosenVoice.name : '';
+}
+speechSynthesis.onvoiceschanged = pickVoice;
+pickVoice();
+
+// ============================================================
+// CANVAS
+// ============================================================
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W, H, currentStage = 0, stageProgress = 0, time = 0, particles = [];
+let isNarrating = false, wordEls = [], advanceAF = null;
+
+function resize() {
+  const r = canvas.parentElement.getBoundingClientRect();
+  const d = window.devicePixelRatio || 1;
+  W = r.width; H = r.height;
+  canvas.width = W*d; canvas.height = H*d;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  ctx.setTransform(d,0,0,d,0,0);
+}
+window.addEventListener('resize', resize);
+
+class Pt {
+  constructor(){ this.x=Math.random()*(W||800); this.y=Math.random()*(H||500);
+    this.vx=(Math.random()-0.5)*0.3; this.vy=(Math.random()-0.5)*0.3;
+    this.s=Math.random()*1.5+0.5; this.a=Math.random()*0.4+0.1; this.ph=Math.random()*Math.PI*2; }
+}
+function initPt(){ particles=[]; for(let i=0;i<500;i++) particles.push(new Pt()); }
+
+// ============================================================
+// DRAW STAGES (same as before, compact)
+// ============================================================
+function d0(){const p=stageProgress;particles.forEach(t=>{t.x+=t.vx;t.y+=t.vy;if(t.x<0||t.x>W)t.vx*=-1;if(t.y<0||t.y>H)t.vy*=-1;const sh=Math.sin(time*.01+t.ph)*.15+.85;ctx.beginPath();ctx.arc(t.x,t.y,t.s,0,Math.PI*2);ctx.fillStyle=`rgba(68,136,255,${t.a*sh*(.3+p*.7)})`;ctx.fill();});const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*.5);g.addColorStop(0,`rgba(68,136,255,${.03*p})`);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+
+function d1(){const p=stageProgress;const cs=[{x:W*.35,y:H*.4},{x:W*.7,y:H*.55},{x:W*.55,y:H*.3},{x:W*.4,y:H*.65}];particles.forEach(t=>{let nd=1e9,nc=cs[0];cs.forEach(c=>{const d=Math.hypot(t.x-c.x,t.y-c.y);if(d<nd){nd=d;nc=c;}});const pl=p*.15/(nd+50);t.vx+=(nc.x-t.x)*pl*.01;t.vy+=(nc.y-t.y)*pl*.01;t.vx*=.99;t.vy*=.99;t.x+=t.vx;t.y+=t.vy;const db=Math.max(0,1-nd/(W*.3))*p;const a=(t.a+db*.3)*(Math.sin(time*.015+t.ph)*.2+.8);ctx.beginPath();ctx.arc(t.x,t.y,t.s*(1+db*.5),0,Math.PI*2);ctx.fillStyle=`rgba(68,136,255,${Math.min(a,.9)})`;ctx.fill();});cs.forEach(c=>{const g=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,W*.12);g.addColorStop(0,`rgba(68,136,255,${.06*p})`);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);});}
+
+function d2(){const p=stageProgress,cx=W*.5,cy=H*.5;particles.forEach(t=>{const dx=cx-t.x,dy=cy-t.y,ds=Math.hypot(dx,dy)+1;const pl=p*.4/(ds+30);t.vx+=dx*pl*.02-dy*pl*.003;t.vy+=dy*pl*.02+dx*pl*.003;t.vx*=.985;t.vy*=.985;t.x+=t.vx;t.y+=t.vy;const nd=ds/(W*.4),ip=nd<(.8-p*.4);let r=68,g=136,b=255;if(ip&&p>.3){const u=Math.min(1,(p-.3)/.7);r+=34*u;g-=68*u;b-=51*u;}const db=Math.max(0,1-nd)*p;const a=(t.a+db*.5)*(Math.sin(time*.02+t.ph)*.15+.85);ctx.beginPath();ctx.arc(t.x,t.y,t.s*(1+db),0,Math.PI*2);ctx.fillStyle=`rgba(${r|0},${g|0},${b|0},${Math.min(a,.95)})`;ctx.fill();});const g=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.25);g.addColorStop(0,`rgba(102,68,204,${.12*p})`);g.addColorStop(.5,`rgba(68,100,255,${.05*p})`);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);if(p>.5){ctx.strokeStyle=`rgba(102,68,204,${.3*(p-.5)*2})`;ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();for(let a=0;a<Math.PI*2;a+=.05){const px=cx+Math.cos(a)*W*.12,py=cy+Math.sin(a)*W*.12;a===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}ctx.closePath();ctx.stroke();ctx.setLineDash([]);}}
+
+function d3(){const p=stageProgress,cx=W*.5,cy=H*.5,thR=W*.08*(.5+p*.5);particles.forEach(t=>{const dx=cx-t.x,dy=cy-t.y,ds=Math.hypot(dx,dy)+1;const pl=.5/(ds+20);t.vx+=dx*pl*.025-dy*pl*.004;t.vy+=dy*pl*.025+dx*pl*.004;t.vx*=.98;t.vy*=.98;t.x+=t.vx;t.y+=t.vy;const nd=ds/(W*.35),ab=ds<thR;let r=68,g=136,b=255;if(ab&&p>.3){const u=Math.min(1,(p-.3)/.5);r=102+153*u;g=68+34*u;b=204-170*u;}else if(nd<.6){r=102;g=68;b=204;}const db=Math.max(0,1-nd)*.8,pu=ab?Math.sin(time*.05*(1+p))*.2+.8:1;const a=(t.a+db*.5)*pu;ctx.beginPath();ctx.arc(t.x,t.y,t.s*(1+db*.8)*(ab?1.3:1),0,Math.PI*2);ctx.fillStyle=`rgba(${r|0},${g|0},${b|0},${Math.min(a,.95)})`;ctx.fill();});ctx.strokeStyle=`rgba(255,102,34,${.4+Math.sin(time*.04)*.15})`;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.arc(cx,cy,thR,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,thR*1.5);cg.addColorStop(0,`rgba(255,102,34,${.15*p})`);cg.addColorStop(.5,`rgba(255,68,0,${.06*p})`);cg.addColorStop(1,'transparent');ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);if(p>.6){const la=(p-.6)/.4;ctx.font='11px "JetBrains Mono"';ctx.fillStyle=`rgba(255,102,34,${.7*la})`;ctx.textAlign='left';ctx.fillText('ρ > ρ₀/4',cx+thR+10,cy-4);ctx.fillText('LOCK THRESHOLD',cx+thR+10,cy+12);}}
+
+function d4(){const p=stageProgress,cx=W*.5,cy=H*.5;const fl=p<.2?p/.2:0,po=p>.2?(p-.2)/.8:0;if(fl>0){const fg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.4*fl);fg.addColorStop(0,`rgba(255,255,255,${.8*fl*(1-fl)})`);fg.addColorStop(.3,`rgba(255,200,100,${.3*fl*(1-fl)})`);fg.addColorStop(1,'transparent');ctx.fillStyle=fg;ctx.fillRect(0,0,W,H);}const lR=W*.06;particles.forEach(t=>{const dx=cx-t.x,dy=cy-t.y,ds=Math.hypot(dx,dy)+1;if(ds<lR&&po>.2){const w=Math.sin(time*.03+t.ph)*2;ctx.beginPath();ctx.arc(t.x+w,t.y+w*.5,t.s*2,0,Math.PI*2);ctx.fillStyle=`rgba(255,200,60,${.6+po*.35})`;ctx.fill();}else if(ds>lR&&po>.3){const ct=(po-.3)/.7;t.vx+=(t.x-cx)*.001*ct*1.5;t.vy+=(t.y-cy)*.001*ct*1.5;t.vx*=.995;t.vy*=.995;t.x+=t.vx;t.y+=t.vy;ctx.beginPath();ctx.arc(t.x,t.y,t.s,0,Math.PI*2);ctx.fillStyle=`rgba(68,136,255,${t.a*(1-ct*.3)})`;ctx.fill();}else{const pl=.3/(ds+20);t.vx+=dx*pl*.01;t.vy+=dy*pl*.01;t.vx*=.98;t.vy*=.98;t.x+=t.vx;t.y+=t.vy;ctx.beginPath();ctx.arc(t.x,t.y,t.s,0,Math.PI*2);ctx.fillStyle=`rgba(102,68,204,${t.a*.7})`;ctx.fill();}});if(po>.2){const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.08);cg.addColorStop(0,`rgba(255,200,60,${.3*po})`);cg.addColorStop(.5,`rgba(255,170,0,${.15*po})`);cg.addColorStop(1,'transparent');ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);}if(po>.5){const la=(po-.5)*2;ctx.font='11px "JetBrains Mono"';ctx.textAlign='center';ctx.fillStyle=`rgba(255,200,60,${.8*la})`;ctx.fillText('D (LOCKED)',cx,cy-W*.07);ctx.fillStyle=`rgba(255,255,255,${.5*la})`;ctx.fillText('SCALE IS BORN',cx,cy+W*.09);ctx.fillStyle=`rgba(68,136,255,${.5*la})`;ctx.textAlign='left';ctx.fillText('φ⁻¹ ≈ 61.8% locked',cx+W*.12,cy-20);ctx.fillText('38.2% cast off →',cx+W*.12,cy);}}
+
+function d5(){const p=stageProgress,cx=W*.5,cy=H*.5;const sn=[{x:cx,y:cy,t:0},{x:cx-W*.15,y:cy-H*.08,t:.2},{x:cx+W*.18,y:cy+H*.05,t:.35},{x:cx+W*.05,y:cy-H*.18,t:.45},{x:cx-W*.22,y:cy+H*.12,t:.55},{x:cx+W*.25,y:cy-H*.1,t:.65},{x:cx-W*.08,y:cy+H*.22,t:.75}];const ac=sn.filter(c=>p>c.t);particles.forEach(t=>{let nd=1e9,nc=null;ac.forEach(c=>{const d=Math.hypot(t.x-c.x,t.y-c.y);if(d<nd){nd=d;nc=c;}});if(nc){const sa=(p-nc.t)/(1-nc.t+.01);if(nd<W*.04&&sa>.3){const w=Math.sin(time*.04+t.ph)*1.5;ctx.beginPath();ctx.arc(t.x+w,t.y,t.s*1.8,0,Math.PI*2);ctx.fillStyle=`rgba(255,200,60,${.5+sa*.4})`;ctx.fill();}else{const pl=.2/(nd+40);t.vx+=(nc.x-t.x)*pl*.01;t.vy+=(nc.y-t.y)*pl*.01;t.vx*=.99;t.vy*=.99;t.x+=t.vx;t.y+=t.vy;const ip=nd/(W*.2)<.6;ctx.beginPath();ctx.arc(t.x,t.y,t.s*(ip?1.2:1),0,Math.PI*2);ctx.fillStyle=ip?`rgba(102,68,204,${t.a*.8})`:`rgba(68,136,255,${t.a*.5})`;ctx.fill();}}});ac.forEach(c=>{const sa=Math.min(1,(p-c.t)/.3);const cg=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,W*.05);cg.addColorStop(0,`rgba(255,200,60,${.25*sa})`);cg.addColorStop(1,'transparent');ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);if(sa<1){ctx.strokeStyle=`rgba(255,170,0,${.3*(1-sa)})`;ctx.lineWidth=1;ctx.beginPath();ctx.arc(c.x,c.y,W*.15*sa,0,Math.PI*2);ctx.stroke();}});if(p>.4){const la=Math.min(1,(p-.4)*3);ctx.font='11px "JetBrains Mono"';ctx.textAlign='center';ctx.fillStyle=`rgba(255,255,255,${.5*la})`;ctx.fillText('SCALE PROPAGATES',cx,H*.08);ctx.fillStyle=`rgba(255,170,0,${.6*la})`;ctx.fillText(ac.length+' SYNC EVENTS',cx,H*.08+18);}}
+
+function d6(){const p=stageProgress,cx=W*.5,cy=H*.5,mR=W*.38;particles.forEach(t=>{const dx=cx-t.x,dy=cy-t.y,ds=Math.hypot(dx,dy)+1,nd=ds/mR;const os=.0003/(nd+.1);t.vx+=(-dy*os+dx*.0001*(nd>.8?-1:1));t.vy+=(dx*os+dy*.0001*(nd>.8?-1:1));t.vx*=.995;t.vy*=.995;t.x+=t.vx;t.y+=t.vy;let r,g,b,a;if(nd<.15){r=255;g=240;b=200;a=.6+Math.sin(time*.02+t.ph)*.15;ctx.beginPath();ctx.arc(t.x,t.y,t.s*2.5,0,Math.PI*2);}else if(nd<.3){const u=(nd-.15)/.15;r=255-u*100;g=170-u*70;b=50+u*100;a=.4+(1-u)*.2;ctx.beginPath();ctx.arc(t.x,t.y,t.s*(2-u*.5),0,Math.PI*2);}else if(nd<.6){r=102;g=68;b=204;a=.25+(1-(nd-.3)/.3)*.2;ctx.beginPath();ctx.arc(t.x,t.y,t.s*1.3,0,Math.PI*2);}else{r=40;g=60;b=100;a=.1+(1-(nd-.6)/.4)*.08;ctx.beginPath();ctx.arc(t.x,t.y,t.s*.8,0,Math.PI*2);}a*=p;ctx.fillStyle=`rgba(${r},${g},${b},${Math.min(a,.9)})`;ctx.fill();});if(p>.4){const la=(p-.4)/.6;ctx.setLineDash([3,5]);ctx.lineWidth=.8;ctx.strokeStyle=`rgba(255,102,34,${.35*la})`;ctx.beginPath();ctx.arc(cx,cy,mR*.3,0,Math.PI*2);ctx.stroke();ctx.strokeStyle=`rgba(102,68,204,${.25*la})`;ctx.beginPath();ctx.arc(cx,cy,mR*.6,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.font='10px "JetBrains Mono"';ctx.textAlign='left';ctx.fillStyle=`rgba(255,240,200,${.7*la})`;ctx.fillText('★ BARYONIC',cx+mR*.05,cy-mR*.05);ctx.fillStyle=`rgba(255,140,50,${.6*la})`;ctx.fillText('/ CONVERSION ZONE',cx+mR*.2,cy+mR*.18);ctx.fillStyle=`rgba(102,68,204,${.6*la})`;ctx.fillText('+ E-POOLING ("DARK MATTER")',cx+mR*.3,cy+mR*.38);ctx.fillStyle=`rgba(60,80,120,${.5*la})`;ctx.fillText('− BASELINE E ("DARK ENERGY")',cx+mR*.35,cy+mR*.55);ctx.fillStyle=`rgba(255,102,34,${.6*la})`;ctx.textAlign='right';ctx.fillText('g† = 1.2×10⁻¹⁰ m/s²',cx-mR*.3-8,cy-4);ctx.fillText('DETECTION LIMIT',cx-mR*.3-8,cy+10);if(p>.7){const gl=(p-.7)/.3;ctx.font='14px "JetBrains Mono"';ctx.textAlign='center';const gy=H*.92;ctx.fillStyle=`rgba(60,80,120,${.5*gl})`;ctx.fillText('----',cx-130,gy);ctx.fillStyle=`rgba(102,68,204,${.6*gl})`;ctx.fillText('+++++',cx-65,gy);ctx.fillStyle=`rgba(255,140,50,${.6*gl})`;ctx.fillText('/////',cx+5,gy);ctx.fillStyle=`rgba(255,240,200,${.8*gl})`;ctx.fillText('*****',cx+75,gy);ctx.font='10px "JetBrains Mono"';ctx.fillStyle=`rgba(255,255,255,${.4*gl})`;ctx.fillText('THE ENTIRE LINE IS PHYSICAL',cx,gy+18);}}const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,mR*.2);cg.addColorStop(0,`rgba(255,220,100,${.15*p})`);cg.addColorStop(.5,`rgba(255,170,0,${.05*p})`);cg.addColorStop(1,'transparent');ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);}
+
+const drawFns=[d0,d1,d2,d3,d4,d5,d6];
+function animate(){time++;ctx.fillStyle='#050510';ctx.fillRect(0,0,W,H);if(stageProgress<1)stageProgress=Math.min(1,stageProgress+.008);drawFns[currentStage]();requestAnimationFrame(animate);}
+
+// ============================================================
+// NARRATION
+// ============================================================
+function speakStage(text, onWord, onEnd) {
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  if (chosenVoice) utt.voice = chosenVoice;
+  utt.rate = 0.92; utt.pitch = 1.05;
+
+  let bIdx = 0;
+  utt.onboundary = (e) => { if (e.name === 'word') { onWord(bIdx); bIdx++; } };
+  utt.onend = () => { onWord(9999); if (onEnd) onEnd(); };
+  utt.onerror = () => { timerFallback(onEnd); };
+
+  speechSynthesis.speak(utt);
+
+  // Chrome keepalive workaround
+  const ka = setInterval(() => {
+    if (speechSynthesis.speaking) { speechSynthesis.pause(); speechSynthesis.resume(); }
+    else clearInterval(ka);
+  }, 10000);
+}
+
+function timerFallback(onEnd) {
+  let idx = 0;
+  const iv = setInterval(() => {
+    if (idx < wordEls.length) { wordEls[idx].classList.add('visible'); idx++; setProgress(idx / wordEls.length); }
+    else { clearInterval(iv); if (onEnd) onEnd(); }
+  }, 300);
+}
+
+function setProgress(pct) {
+  const b = document.getElementById('readingProgress');
+  if (b) b.style.width = (pct * 100) + '%';
+}
+
+function startAdvance() {
+  const bar = document.getElementById('advanceBar');
+  const fill = document.getElementById('advanceFill');
+  const lbl = document.getElementById('advanceLabel');
+  if (!bar) return;
+  bar.classList.add('visible'); lbl.classList.add('visible');
+  const start = Date.now(), dur = 3500;
+  function tick() {
+    const pct = Math.min(1, (Date.now() - start) / dur);
+    fill.style.width = (pct * 100) + '%';
+    if (pct >= 1) {
+      if (currentStage < stages.length - 1) { goToStage(currentStage + 1); startNarration(); }
+      else stopNarration();
+      return;
+    }
+    advanceAF = requestAnimationFrame(tick);
+  }
+  advanceAF = requestAnimationFrame(tick);
+}
+
+function stopAdvance() {
+  if (advanceAF) cancelAnimationFrame(advanceAF);
+  const b = document.getElementById('advanceBar'), l = document.getElementById('advanceLabel');
+  if (b) b.classList.remove('visible'); if (l) l.classList.remove('visible');
+}
+
+function startNarration() {
+  isNarrating = true;
+  document.getElementById('btnPlay').textContent = '⏸ PAUSE';
+  document.getElementById('btnPlay').classList.add('active');
+  document.getElementById('btnPrev').disabled = true;
+  document.getElementById('btnNext').disabled = true;
+  stopAdvance();
+
+  const s = stages[currentStage];
+  speakStage(s.speak || s.body, (wIdx) => {
+    for (let i = 0; i <= wIdx && i < wordEls.length; i++)
+      if (!wordEls[i].classList.contains('visible')) wordEls[i].classList.add('visible');
+    setProgress(Math.min(1, (wIdx + 1) / wordEls.length));
+  }, () => {
+    const eq = document.getElementById('stageEq'); if (eq) eq.classList.add('visible');
+    const gv = document.getElementById('gradientViz'); if (gv) gv.classList.add('visible');
+    setProgress(1);
+    startAdvance();
+  });
+}
+
+function stopNarration() {
+  isNarrating = false;
+  speechSynthesis.cancel();
+  stopAdvance();
+  document.getElementById('btnPlay').textContent = '▶ NARRATE';
+  document.getElementById('btnPlay').classList.remove('active');
+  document.getElementById('btnPrev').disabled = false;
+  document.getElementById('btnNext').disabled = false;
+}
+
+// ============================================================
+// UI
+// ============================================================
+function buildTimeline() {
+  const tl = document.getElementById('timeline'); tl.innerHTML = '';
+  stages.forEach((s, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'timeline-dot' + (i === currentStage ? ' active' : '') + (i < currentStage ? ' passed' : '');
+    dot.innerHTML = `<span>${s.timelineLabel}</span>`;
+    dot.onclick = () => { stopNarration(); goToStage(i); };
+    tl.appendChild(dot);
+  });
+}
+
+function buildNarrative() {
+  const nav = document.getElementById('narrative'); nav.innerHTML = '';
+  const s = stages[currentStage];
+  const card = document.createElement('div');
+  card.className = 'narrative-card';
+  const words = s.body.split(/\s+/);
+  const ws = words.map((w, i) => `<span class="word" data-i="${i}">${w} </span>`).join('');
+  let gvh = '';
+  if (s.gradient) gvh = '<div class="gradient-viz" id="gradientViz"><span class="gv-base">−−−−</span><span class="gv-pool">+++++</span><span class="gv-trans">/////</span><span class="gv-matter">★★★★★</span></div>';
+
+  card.innerHTML = `<div class="phase-num">${s.phase}</div><h3>${s.title}</h3><div class="body-text">${ws}</div>${gvh}<div class="eq" id="stageEq">${s.eq}</div><div class="advance-bar" id="advanceBar"><div class="fill" id="advanceFill"></div></div><div class="advance-label" id="advanceLabel">ADVANCING...</div><div class="reading-progress" id="readingProgress"></div>`;
+  nav.appendChild(card);
+  wordEls = Array.from(card.querySelectorAll('.word'));
+  requestAnimationFrame(() => card.classList.add('visible'));
+}
+
+function goToStage(idx) {
+  if (idx < 0 || idx >= stages.length) return;
+  currentStage = idx; stageProgress = 0;
+  if (idx <= 1) particles.forEach(t => { t.x = Math.random()*W; t.y = Math.random()*H; t.vx = (Math.random()-.5)*.3; t.vy = (Math.random()-.5)*.3; });
+  document.getElementById('stageLabel').textContent = `STAGE ${idx+1} / ${stages.length}`;
+  buildTimeline(); buildNarrative();
+}
+
+document.getElementById('btnPrev').onclick = () => { stopNarration(); goToStage(currentStage - 1); };
+document.getElementById('btnNext').onclick = () => { stopNarration(); goToStage(currentStage + 1); };
+document.getElementById('btnPlay').onclick = function() {
+  if (isNarrating) {
+    stopNarration();
+    wordEls.forEach(w => w.classList.add('visible'));
+    const eq = document.getElementById('stageEq'); if (eq) eq.classList.add('visible');
+    const gv = document.getElementById('gradientViz'); if (gv) gv.classList.add('visible');
+    setProgress(1);
+  } else { startNarration(); }
+};
+
+// ============================================================
+// INIT
+// ============================================================
+resize(); initPt(); buildTimeline(); buildNarrative(); animate();
+</script>
+</body>
+</html>
