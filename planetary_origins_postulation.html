@@ -30,28 +30,30 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   overflow: hidden;
+  padding: 60px 0 40px;
+  border-bottom: 1px solid rgba(58,64,96,0.1);
 }
 
 .scene canvas {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  height: 50vh;
+  flex-shrink: 0;
+  border-radius: 2px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(58,64,96,0.15);
 }
 
 .scene .overlay {
   position: relative;
-  z-index: 1;
   text-align: center;
-  padding: 40px 30px;
+  padding: 30px 30px 20px;
   max-width: 780px;
-  pointer-events: none;
 }
-
-.overlay * { pointer-events: none; }
 
 h1 {
   font-weight: 300;
@@ -62,7 +64,7 @@ h1 {
   opacity: 0;
   transform: translateY(25px);
   transition: opacity 1.4s ease, transform 1.4s ease;
-  text-shadow: 0 0 40px rgba(6,8,16,0.9);
+  text-shadow: none;
 }
 
 h2 {
@@ -74,7 +76,6 @@ h2 {
   opacity: 0;
   transform: translateY(18px);
   transition: opacity 1.6s ease 0.25s, transform 1.6s ease 0.25s;
-  text-shadow: 0 0 30px rgba(6,8,16,0.9);
 }
 
 .narrative {
@@ -86,7 +87,6 @@ h2 {
   opacity: 0;
   transform: translateY(18px);
   transition: opacity 1.8s ease 0.4s, transform 1.8s ease 0.4s;
-  text-shadow: 0 0 20px rgba(6,8,16,0.95), 0 0 40px rgba(6,8,16,0.8);
 }
 
 .narrative em { color: var(--bright); font-style: italic; }
@@ -178,17 +178,16 @@ h2 {
 
 <!-- SLIDE 1: Solar System Overview -->
 <div class="scene" id="s1">
-  <canvas id="c1"></canvas>
   <div class="overlay">
     <h1>What if we read the orbits<br>as a single event?</h1>
     <div class="divider"></div>
     <h2>A postulation</h2>
   </div>
+  <canvas id="c1"></canvas>
 </div>
 
 <!-- SLIDE 2: Eccentricities Measured -->
 <div class="scene" id="s2">
-  <canvas id="c2"></canvas>
   <div class="overlay">
     <h1>Orbital Eccentricities</h1>
     <div class="divider"></div>
@@ -199,11 +198,11 @@ h2 {
       <span class="ratio">Saturn excess ≈ Neptune deficit — 98.3%</span>
     </p>
   </div>
+  <canvas id="c2"></canvas>
 </div>
 
 <!-- SLIDE 3: Pre-Capture Binary — No Earth -->
 <div class="scene" id="s3">
-  <canvas id="c3"></canvas>
   <div class="overlay">
     <h1>Before</h1>
     <div class="divider"></div>
@@ -214,11 +213,11 @@ h2 {
       No Earth. Not yet.
     </p>
   </div>
+  <canvas id="c3"></canvas>
 </div>
 
 <!-- SLIDE 4: Rogue Earth + Satellite, Far Away -->
 <div class="scene" id="s4">
-  <canvas id="c4"></canvas>
   <div class="overlay">
     <h1>The Stranger</h1>
     <div class="divider"></div>
@@ -228,11 +227,11 @@ h2 {
       Approaching the solar system at <span class="ratio">v∞ ≈ 5 km/s</span>
     </p>
   </div>
+  <canvas id="c4"></canvas>
 </div>
 
 <!-- SLIDE 5: Saturn Encounter — Moon Stripped -->
 <div class="scene" id="s5">
-  <canvas id="c5"></canvas>
   <div class="overlay">
     <h1>Saturn Sets the Trap</h1>
     <div class="divider"></div>
@@ -243,11 +242,11 @@ h2 {
       still disintegrating 4.5 billion years later.</span>
     </p>
   </div>
+  <canvas id="c5"></canvas>
 </div>
 
 <!-- SLIDE 6: Venus–Mars Binary Detail -->
 <div class="scene" id="s6">
-  <canvas id="c6"></canvas>
   <div class="overlay">
     <h1>The Binary</h1>
     <div class="divider"></div>
@@ -259,11 +258,11 @@ h2 {
       Stable for billions of years — until something arrives.
     </p>
   </div>
+  <canvas id="c6"></canvas>
 </div>
 
 <!-- SLIDE 7: Earth Enters — Disruption -->
 <div class="scene" id="s7">
-  <canvas id="c7"></canvas>
   <div class="overlay">
     <h1>The Disruption</h1>
     <div class="divider"></div>
@@ -276,11 +275,11 @@ h2 {
       <span class="ear">Earth</span> settles at 1.0 AU. Debris becomes the Moon.
     </p>
   </div>
+  <canvas id="c7"></canvas>
 </div>
 
 <!-- SLIDE 8: Collision with Theia -->
 <div class="scene" id="s8">
-  <canvas id="c8"></canvas>
   <div class="overlay">
     <h1>The Collision</h1>
     <div class="divider"></div>
@@ -291,11 +290,11 @@ h2 {
       Two bloom histories merge — magnetic field reversals begin.
     </p>
   </div>
+  <canvas id="c8"></canvas>
 </div>
 
 <!-- SLIDE 9: Mars as Dead Satellite -->
 <div class="scene" id="s9">
-  <canvas id="c9"></canvas>
   <div class="overlay">
     <h1>A Dead Moon</h1>
     <div class="divider"></div>
@@ -308,11 +307,11 @@ h2 {
       <span class="mar">Mars</span> isn't a small planet. <span class="mar">Mars</span> is a <em>dead moon</em>.
     </p>
   </div>
+  <canvas id="c9"></canvas>
 </div>
 
 <!-- SLIDE 10: Probability -->
 <div class="scene" id="s10">
-  <canvas id="c10"></canvas>
   <div class="overlay">
     <h1>The Mathematics</h1>
     <div class="divider"></div>
@@ -328,11 +327,11 @@ h2 {
       This is not a fit. This is a <em>reconstruction</em>.
     </p>
   </div>
+  <canvas id="c10"></canvas>
 </div>
 
 <!-- SLIDE 11: Earth Today -->
 <div class="scene" id="s11">
-  <canvas id="c11"></canvas>
   <div class="overlay">
     <h1>One rogue planet.<br>One transit.<br>One collision.</h1>
     <div class="divider"></div>
@@ -342,6 +341,7 @@ h2 {
       A postulation within the ΞĐ (Seeth) framework
     </p>
   </div>
+  <canvas id="c11"></canvas>
 </div>
 
 <script>
@@ -352,10 +352,10 @@ const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
 function sizeCanvas(id) {
   const c = document.getElementById(id);
-  const el = c.parentElement;
-  const w = el.clientWidth, h = el.clientHeight;
+  const rect = c.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  if (w < 1 || h < 1) return { ctx: c.getContext('2d'), w: 300, h: 300 };
   c.width = w * DPR; c.height = h * DPR;
-  c.style.width = w + 'px'; c.style.height = h + 'px';
   const ctx = c.getContext('2d');
   ctx.scale(DPR, DPR);
   return { ctx, w, h };
@@ -636,77 +636,145 @@ function anim4(t) {
 }
 
 // ═══════════════════════════════════════════
-// SLIDE 5: SATURN ENCOUNTER
+// SLIDE 5: SATURN ENCOUNTER — capture + shred to disc
 // ═══════════════════════════════════════════
 function anim5(t) {
   const {ctx,w,h} = sizeCanvas('c5');
   ctx.clearRect(0,0,w,h);
   drawStars(ctx,w,h,t);
 
-  const sx = w*0.58, sy = h*0.48;
-  // Saturn
-  drawGradBody(ctx, sx, sy, 24, '#e0c868', '#c0a040', '#907828');
-  drawRings(ctx, sx, sy, 24);
-  label(ctx, sx, sy+38, 'Saturn', '#d0b06040', 10);
+  const sx = w*0.55, sy = h*0.48;
+  const satR = 24;
 
-  // Hyperbolic trajectory
-  const T = (t*0.35) % 6.28;
-  ctx.strokeStyle = 'rgba(90,138,170,0.15)'; ctx.lineWidth = 1;
-  ctx.setLineDash([3,5]);
-  ctx.beginPath();
-  for (let i=0; i<=60; i++) {
-    const tt = (i/60)*Math.PI*0.9 - Math.PI*0.45;
-    const r = 130/(1+0.75*Math.cos(tt));
-    const px = sx-70+r*Math.cos(tt+1.1);
-    const py = sy+r*Math.sin(tt+1.1);
-    if (i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
-  }
-  ctx.stroke(); ctx.setLineDash([]);
+  // Phase: 0→2 approach, 2→3.5 capture+shred, 3.5→6 rings form
+  const phase = (t*0.2) % 6;
 
-  // Rogue position
-  const rPhase = (T % (Math.PI*0.9)) - Math.PI*0.45;
-  const rR = 130/(1+0.75*Math.cos(rPhase));
-  const rx = sx-70+rR*Math.cos(rPhase+1.1);
-  const ry = sy+rR*Math.sin(rPhase+1.1);
-  drawBody(ctx, rx, ry, 9, '#5a8aaa', true);
+  // Saturn always present
+  drawGradBody(ctx, sx, sy, satR, '#e0c868', '#c0a040', '#907828');
 
-  // Moon stripping — when close to Saturn
-  const dist = Math.hypot(rx-sx, ry-sy);
-  const closeness = clamp(1-dist/160, 0, 1);
+  if (phase < 2) {
+    // Existing thin rings (pre-capture, very faint)
+    ctx.strokeStyle = 'rgba(208,176,96,0.08)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(sx,sy,satR*1.8,satR*0.45,-0.15,0,6.28); ctx.stroke();
 
-  if (closeness > 0.15) {
-    // Moon being pulled toward Saturn
-    const moonX = lerp(rx, sx, closeness*0.65);
-    const moonY = lerp(ry, sy, closeness*0.65);
-    drawBody(ctx, moonX, moonY, 3*(1-closeness*0.3), '#b0c8d8');
-    // Tidal stream
-    ctx.strokeStyle = `rgba(176,200,216,${closeness*0.15})`;
-    ctx.lineWidth = 0.6;
-    ctx.beginPath(); ctx.moveTo(rx,ry);
-    ctx.quadraticCurveTo((rx+moonX)/2+10, (ry+moonY)/2-10, moonX, moonY);
-    ctx.stroke();
-    // Particle debris
-    for (let i=0; i<8; i++) {
-      const tt = i/8;
-      const dx = lerp(rx,moonX,tt) + Math.sin(t*3+i)*4;
-      const dy = lerp(ry,moonY,tt) + Math.cos(t*2.5+i)*4;
-      ctx.fillStyle = `rgba(176,200,216,${closeness*0.08})`;
-      ctx.beginPath(); ctx.arc(dx,dy,0.8,0,6.28); ctx.fill();
+    // Hyperbolic trajectory of rogue
+    ctx.strokeStyle = 'rgba(90,138,170,0.12)'; ctx.lineWidth = 0.8;
+    ctx.setLineDash([3,5]);
+    ctx.beginPath();
+    for (let i=0;i<=50;i++) {
+      const tt = (i/50)*Math.PI*0.85 - Math.PI*0.42;
+      const r = 140/(1+0.7*Math.cos(tt));
+      const px = sx-80+r*Math.cos(tt+1.1), py = sy+r*Math.sin(tt+1.1);
+      if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
     }
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // Rogue moving along trajectory
+    const p = phase/2;
+    const rPhase = lerp(-Math.PI*0.42, Math.PI*0.43, p);
+    const rR = 140/(1+0.7*Math.cos(rPhase));
+    const rx = sx-80+rR*Math.cos(rPhase+1.1);
+    const ry = sy+rR*Math.sin(rPhase+1.1);
+    drawBody(ctx, rx, ry, 10, '#5a8aaa', true);
+    label(ctx, rx, ry-16, 'Rogue', 'rgba(90,138,170,0.2)', 8);
+
+    // Moon orbiting rogue
+    const mA = t*2.5;
+    const moonX = rx+Math.cos(mA)*18, moonY = ry+Math.sin(mA)*18;
+    drawBody(ctx, moonX, moonY, 3.5, '#b0c8d8');
+
+    // As rogue passes close, tidal stream begins
+    const dist = Math.hypot(rx-sx, ry-sy);
+    const closeness = clamp(1 - dist/140, 0, 1);
+    if (closeness > 0.3) {
+      // Moon being pulled off
+      const pullX = lerp(moonX, sx, (closeness-0.3)*1.4);
+      const pullY = lerp(moonY, sy, (closeness-0.3)*1.4);
+      ctx.strokeStyle = `rgba(176,200,216,${closeness*0.12})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.moveTo(rx,ry); ctx.quadraticCurveTo(pullX+15,pullY-10,pullX,pullY); ctx.stroke();
+      // debris particles along stream
+      for (let i=0; i<6; i++) {
+        const tt=i/6;
+        ctx.fillStyle = `rgba(176,200,216,${closeness*0.06})`;
+        ctx.beginPath();
+        ctx.arc(lerp(rx,pullX,tt)+Math.sin(t*3+i)*3, lerp(ry,pullY,tt)+Math.cos(t*2+i)*3, 0.7, 0, 6.28);
+        ctx.fill();
+      }
+    }
+
+    // Exit arrow
+    ctx.strokeStyle = 'rgba(90,138,170,0.06)'; ctx.lineWidth = 0.8;
+    ctx.setLineDash([2,5]);
+    ctx.beginPath(); ctx.moveTo(sx-130,sy+80); ctx.quadraticCurveTo(sx-160,sy+40,w*0.06,h*0.25); ctx.stroke();
+    ctx.setLineDash([]);
+    label(ctx, w*0.1, h*0.23, '→ sunward', 'rgba(90,138,170,0.08)', 8);
+
+  } else if (phase < 3.5) {
+    // Moon captured — spiraling into Saturn, being shredded
+    const p = (phase-2)/1.5; // 0→1
+
+    // Captured moon spiraling in
+    const spiralR = lerp(satR*4, satR*1.6, p);
+    const spiralA = t*2 + p*8;
+    const moonR = lerp(3.5, 1.5, p); // shrinking as it shreds
+    const moonX = sx+Math.cos(spiralA)*spiralR;
+    const moonY = sy+Math.sin(spiralA)*spiralR*0.3;
+
+    if (moonR > 0.5) {
+      drawBody(ctx, moonX, moonY, moonR, '#b0c8d8');
+    }
+
+    // Debris trail — particles ripping off moon, spreading into disc
+    const numDebris = Math.floor(40*p);
+    for (let i=0; i<numDebris; i++) {
+      const age = (i/numDebris)*p;
+      const dR = lerp(spiralR, satR*1.9, age) + Math.sin(i*2.7)*satR*0.3;
+      const dA = spiralA - i*0.18 + Math.sin(i*1.3)*0.2;
+      const dx = sx+Math.cos(dA)*dR;
+      const dy = sy+Math.sin(dA)*dR*0.3;
+      const alpha = 0.15*(1-age*0.4);
+      const size = lerp(1.5, 0.5, age);
+      ctx.fillStyle = `rgba(176,200,216,${alpha})`;
+      ctx.beginPath(); ctx.arc(dx,dy,size,0,6.28); ctx.fill();
+    }
+
+    // Forming ring band (growing opacity)
+    ctx.strokeStyle = `rgba(208,176,96,${0.05+p*0.15})`; ctx.lineWidth = lerp(1, 5, p);
+    ctx.beginPath(); ctx.ellipse(sx,sy,satR*1.9,satR*0.5,-0.15,0,6.28); ctx.stroke();
+
+    // Tidal shred label
+    label(ctx, sx, sy+satR*0.5+50, 'tidal disruption', 'rgba(176,200,216,0.1)', 9);
+
   } else {
-    // Moon still with rogue
-    const mA = t*2.2;
-    drawBody(ctx, rx+Math.cos(mA)*16, ry+Math.sin(mA)*16, 3, '#b0c8d8');
+    // Rings fully formed — Saturn with bright new rings
+    const p = clamp((phase-3.5)/2.5, 0, 1);
+
+    // Thick bright rings (new material)
+    ctx.strokeStyle = `rgba(200,190,170,${0.2+p*0.1})`; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.ellipse(sx,sy,satR*1.85,satR*0.48,-0.15,0,6.28); ctx.stroke();
+    ctx.strokeStyle = `rgba(208,176,96,${0.15+p*0.1})`; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(sx,sy,satR*2.15,satR*0.58,-0.15,0,6.28); ctx.stroke();
+    // Inner ring
+    ctx.strokeStyle = `rgba(220,200,160,${0.1+p*0.08})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(sx,sy,satR*1.55,satR*0.38,-0.15,0,6.28); ctx.stroke();
+
+    // Scattered ring particles (sparkling)
+    for (let i=0; i<30; i++) {
+      const a = i*0.21 + t*0.3;
+      const d = satR*1.5 + (i%8)*satR*0.1;
+      const px = sx+Math.cos(a)*d, py = sy+Math.sin(a)*d*0.27;
+      const sparkle = 0.08+0.06*Math.sin(t*2+i*1.7);
+      ctx.fillStyle = `rgba(220,210,190,${sparkle})`;
+      ctx.beginPath(); ctx.arc(px,py,0.6,0,6.28); ctx.fill();
+    }
+
+    // Label
+    label(ctx, sx, sy+satR*0.6+55, 'ice moon → ring system', 'rgba(208,176,96,0.12)', 9);
+    label(ctx, sx, sy+satR*0.6+68, '100–400 Myr disintegration', 'rgba(136,144,168,0.06)', 8);
   }
 
-  // Exit trajectory bend sunward
-  ctx.strokeStyle = 'rgba(90,138,170,0.08)'; ctx.lineWidth = 1;
-  ctx.setLineDash([2,5]);
-  ctx.beginPath();
-  ctx.moveTo(sx-120, sy+90);
-  ctx.quadraticCurveTo(sx-160, sy+50, w*0.08, h*0.3);
-  ctx.stroke(); ctx.setLineDash([]);
-  label(ctx, w*0.12, h*0.28, '→ sunward', 'rgba(90,138,170,0.12)', 9);
+  label(ctx, sx, sy+satR+12, 'Saturn', '#d0b06030', 10);
 }
 
 // ═══════════════════════════════════════════
@@ -858,7 +926,7 @@ function anim7(t) {
 }
 
 // ═══════════════════════════════════════════
-// SLIDE 8: COLLISION WITH THEIA — close-up
+// SLIDE 8: COLLISION WITH THEIA — explosion + re-accretion
 // ═══════════════════════════════════════════
 function anim8(t) {
   const {ctx,w,h} = sizeCanvas('c8');
@@ -866,87 +934,203 @@ function anim8(t) {
   drawStars(ctx,w,h,t);
 
   const cx=w*0.5, cy=h*0.5;
-  const R = Math.min(w,h)*0.1;
+  const R = Math.min(w,h)*0.09;
 
-  // Collision cycle
-  const phase = (t*0.18) % 5;
+  // Phase: 0→1.5 approach, 1.5→2.5 explosion, 2.5→4.5 debris expanding, 4.5→7 re-accretion
+  const phase = (t*0.16) % 7;
 
-  if (phase < 2) {
-    // Approach
-    const p = phase/2;
-    const rogueX = lerp(w*0.15, cx-R*0.3, p);
-    const rogueY = lerp(h*0.7, cy, p);
-    const theiaX = lerp(w*0.85, cx+R*0.3, p);
-    const theiaY = lerp(h*0.3, cy, p);
+  if (phase < 1.5) {
+    // APPROACH — two bodies converging
+    const p = phase/1.5;
+    const rogueX = lerp(w*0.12, cx-R*0.15, p);
+    const rogueY = lerp(h*0.65, cy+R*0.05, p);
+    const theiaX = lerp(w*0.88, cx+R*0.15, p);
+    const theiaY = lerp(h*0.35, cy-R*0.05, p);
 
-    // Rogue
+    // Rogue (proto-Earth)
     drawGradBody(ctx, rogueX, rogueY, R, '#90bcd8', '#5a8aaa', '#3a6080');
-    label(ctx, rogueX, rogueY+R+14, 'Rogue', '#4088cc30', 10);
-    // Theia
-    drawGradBody(ctx, theiaX, theiaY, R*0.45, '#c080b0', '#905878', '#604050');
-    label(ctx, theiaX, theiaY+R*0.45+12, 'Theia', '#a0609030', 10);
+    label(ctx, rogueX, rogueY+R+14, 'Rogue', '#4088cc25', 10);
 
-    // Closing velocity indicator
+    // Theia (smaller)
+    drawGradBody(ctx, theiaX, theiaY, R*0.42, '#c080b0', '#905878', '#604050');
+    label(ctx, theiaX, theiaY+R*0.42+12, 'Theia', '#a0609025', 10);
+
+    // Closing velocity line
     if (p > 0.3) {
-      ctx.strokeStyle = 'rgba(255,200,100,0.06)'; ctx.lineWidth = 0.5;
+      ctx.strokeStyle = `rgba(255,200,100,${0.03+p*0.04})`; ctx.lineWidth = 0.5;
       ctx.beginPath(); ctx.moveTo(rogueX,rogueY); ctx.lineTo(theiaX,theiaY); ctx.stroke();
-      label(ctx, cx, cy-R*1.5, '46 km/s', 'rgba(232,200,112,0.1)', 10);
+      label(ctx, cx, cy-R*1.8, '46 km/s', `rgba(232,200,112,${0.05+p*0.06})`, 10);
     }
-  } else if (phase < 3) {
-    // Impact flash
-    const fl = (phase-2);
-    // Flash
-    const fg = ctx.createRadialGradient(cx,cy,0,cx,cy,R*4*fl);
-    fg.addColorStop(0, `rgba(255,230,180,${0.6*(1-fl)})`);
-    fg.addColorStop(0.3,`rgba(255,180,100,${0.3*(1-fl)})`);
-    fg.addColorStop(1,'transparent');
-    ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(cx,cy,R*4*fl,0,6.28); ctx.fill();
 
-    // Merging body
-    const mergeR = R*(1+fl*0.12);
-    drawGradBody(ctx, cx, cy, mergeR, '#a0b8d0', '#6090b0', '#405870');
-
-    // Debris ejecting
-    for (let i=0; i<30; i++) {
-      const a = i*0.21+t;
-      const d = R*1.5 + fl*R*3*((i%5)/5);
-      const dx = cx+Math.cos(a)*d, dy = cy+Math.sin(a)*d;
-      const dr = 1.2*(1-fl*0.5);
-      ctx.fillStyle = `rgba(200,180,160,${0.15*(1-fl)})`;
-      ctx.beginPath(); ctx.arc(dx,dy,dr,0,6.28); ctx.fill();
+    // Pre-impact glow building
+    if (p > 0.8) {
+      const gl = (p-0.8)/0.2;
+      const gg = ctx.createRadialGradient(cx,cy,0,cx,cy,R*1.5);
+      gg.addColorStop(0,`rgba(255,220,160,${gl*0.15})`); gg.addColorStop(1,'transparent');
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(cx,cy,R*1.5,0,6.28); ctx.fill();
     }
+
+  } else if (phase < 2.5) {
+    // EXPLOSION — violent flash, bodies merging, ejecta flying out
+    const p = (phase-1.5)/1.0; // 0→1
+
+    // Multi-layer flash
+    const flashR = R * (2 + p*6);
+    const fg1 = ctx.createRadialGradient(cx,cy,0,cx,cy,flashR);
+    fg1.addColorStop(0, `rgba(255,255,240,${0.7*(1-p*0.6)})`);
+    fg1.addColorStop(0.15, `rgba(255,220,140,${0.5*(1-p*0.5)})`);
+    fg1.addColorStop(0.4, `rgba(255,160,80,${0.25*(1-p*0.4)})`);
+    fg1.addColorStop(0.7, `rgba(200,80,40,${0.1*(1-p*0.3)})`);
+    fg1.addColorStop(1, 'transparent');
+    ctx.fillStyle = fg1; ctx.beginPath(); ctx.arc(cx,cy,flashR,0,6.28); ctx.fill();
+
+    // Central molten mass
+    const coreR = R*(0.8+p*0.3);
+    drawGradBody(ctx, cx, cy, coreR, '#ffa060', '#d06030', '#802010');
+    // Molten surface glow
+    const mg = ctx.createRadialGradient(cx,cy,coreR*0.5,cx,cy,coreR*1.2);
+    mg.addColorStop(0,'rgba(255,180,80,0.2)'); mg.addColorStop(1,'transparent');
+    ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(cx,cy,coreR*1.2,0,6.28); ctx.fill();
+
+    // Ejecta — large chunks flying outward
+    for (let i=0; i<50; i++) {
+      const a = i*0.126 + i*i*0.03; // varied angles
+      const speed = 0.5 + (i%7)*0.15;
+      const d = p * R * (3+speed*4);
+      const dx = cx+Math.cos(a)*d;
+      const dy = cy+Math.sin(a)*d;
+      const size = lerp(2.5, 0.8, p) * (1-(i%5)*0.12);
+      const alpha = lerp(0.25, 0.08, p);
+      // Hot ejecta colors
+      const heat = (i%3===0) ? `rgba(255,160,80,${alpha})` :
+                   (i%3===1) ? `rgba(200,140,100,${alpha})` :
+                               `rgba(160,160,170,${alpha})`;
+      ctx.fillStyle = heat;
+      ctx.beginPath(); ctx.arc(dx,dy,Math.max(size,0.3),0,6.28); ctx.fill();
+    }
+
+    // Shockwave ring
+    ctx.strokeStyle = `rgba(255,200,120,${0.15*(1-p)})`;
+    ctx.lineWidth = 2*(1-p)+0.5;
+    ctx.beginPath(); ctx.arc(cx,cy,R*2+p*R*6,0,6.28); ctx.stroke();
+
+  } else if (phase < 4.5) {
+    // DEBRIS FIELD — expanding cloud, cooling, beginning to clump
+    const p = (phase-2.5)/2.0; // 0→1
+
+    // Central hot mass (cooling)
+    const coreR = R*(1.0-p*0.1);
+    const heatFade = 1-p*0.7;
+    drawGradBody(ctx, cx, cy, coreR,
+      `rgb(${Math.floor(lerp(255,80,p))},${Math.floor(lerp(140,120,p))},${Math.floor(lerp(60,180,p))})`,
+      `rgb(${Math.floor(lerp(200,50,p))},${Math.floor(lerp(80,100,p))},${Math.floor(lerp(30,160,p))})`,
+      `rgb(${Math.floor(lerp(120,20,p))},${Math.floor(lerp(40,60,p))},${Math.floor(lerp(15,100,p))})`
+    );
+    // Cooling surface veins
+    ctx.strokeStyle = `rgba(255,120,40,${0.08*heatFade})`;
+    ctx.lineWidth = 0.5;
+    for (let i=0; i<5; i++) {
+      const a = i*1.25+t*0.03;
+      ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(a)*coreR*0.3, cy+Math.sin(a)*coreR*0.3);
+      ctx.lineTo(cx+Math.cos(a+0.2)*coreR*0.85, cy+Math.sin(a+0.2)*coreR*0.85);
+      ctx.stroke();
+    }
+
+    // Debris cloud — particles orbiting, some clumping
+    for (let i=0; i<70; i++) {
+      const baseA = i*0.09 + i*i*0.017;
+      const orbR = R*(2+p*1.5) + Math.sin(i*2.1)*R*0.8;
+      // Particles orbit the center
+      const a = baseA + t*0.3*(1-i*0.005);
+      const dx = cx+Math.cos(a)*orbR;
+      const dy = cy+Math.sin(a)*orbR*0.4; // flattening into disc
+      const size = 0.5+Math.sin(i*1.3)*0.5+(i%8===0?1.5:0);
+      const cooling = lerp(0.12, 0.06, p);
+      ctx.fillStyle = (i%4===0) ? `rgba(200,160,120,${cooling})` : `rgba(160,165,175,${cooling})`;
+      ctx.beginPath(); ctx.arc(dx,dy,Math.max(size,0.3),0,6.28); ctx.fill();
+    }
+
+    // Disc flattening indicator
+    ctx.strokeStyle = `rgba(180,180,190,${0.03+p*0.03})`;
+    ctx.lineWidth = 0.4;
+    ctx.beginPath(); ctx.ellipse(cx,cy,R*3+p*R,R*1.2-p*R*0.5,0,0,6.28); ctx.stroke();
+
+    label(ctx, cx, cy+R*2+30, 'debris disc flattening', 'rgba(136,144,168,0.06)', 8);
+
   } else {
-    // Aftermath — Earth + Moon
-    const p = clamp((phase-3)/2, 0, 1);
-    // Earth forming
-    drawGradBody(ctx, cx, cy, R*1.05, '#5098d0', '#3878b0', '#205070');
-    // Continent hints
-    ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,R*1.05,0,6.28); ctx.clip();
-    ctx.fillStyle = 'rgba(60,140,80,0.15)';
-    ctx.beginPath(); ctx.ellipse(cx+Math.cos(t*0.08)*R*0.4, cy-R*0.2, R*0.22, R*0.45, 0.2, 0, 6.28); ctx.fill();
-    ctx.restore();
+    // RE-ACCRETION — debris collapsing back, Earth forming, Moon separating
+    const p = clamp((phase-4.5)/2.5, 0, 1); // 0→1
 
-    // Moon coalescing from debris
-    const moonDist = R*2.2;
-    const moonA = t*0.6;
-    const moonX = cx+Math.cos(moonA)*moonDist, moonY = cy+Math.sin(moonA)*moonDist*0.35;
-    const moonR = R*0.14*clamp(p*2,0,1);
-    if (moonR > 0.5) {
-      drawGradBody(ctx, moonX, moonY, moonR, '#c4c8cc', '#909498', '#606468');
+    // Earth growing — absorbing material
+    const earthR = R*(0.9+p*0.2);
+    // Transition from molten to blue
+    const blue = p;
+    drawGradBody(ctx, cx, cy, earthR,
+      `rgb(${Math.floor(lerp(160,80,blue))},${Math.floor(lerp(100,140,blue))},${Math.floor(lerp(80,208,blue))})`,
+      `rgb(${Math.floor(lerp(120,56,blue))},${Math.floor(lerp(70,120,blue))},${Math.floor(lerp(55,176,blue))})`,
+      `rgb(${Math.floor(lerp(80,16,blue))},${Math.floor(lerp(40,48,blue))},${Math.floor(lerp(35,80,blue))})`
+    );
+
+    // Continents emerging (late)
+    if (p > 0.7) {
+      ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,earthR,0,6.28); ctx.clip();
+      const cAlpha = (p-0.7)/0.3;
+      ctx.fillStyle = `rgba(50,130,70,${0.15*cAlpha})`;
+      ctx.beginPath(); ctx.ellipse(cx+Math.cos(t*0.06)*earthR*0.35, cy-earthR*0.15, earthR*0.2, earthR*0.4, 0.15, 0, 6.28); ctx.fill();
+      ctx.restore();
     }
-    // Remaining debris ring (fading)
-    if (p < 0.8) {
-      for (let i=0; i<20; i++) {
-        const a = i*0.31+t*0.4;
-        const d = R*1.8+Math.sin(i*1.7)*R*0.5;
-        ctx.fillStyle = `rgba(180,180,180,${0.06*(1-p)})`;
-        ctx.beginPath(); ctx.arc(cx+Math.cos(a)*d, cy+Math.sin(a)*d*0.35, 0.8, 0, 6.28); ctx.fill();
+
+    // Atmosphere forming
+    if (p > 0.4) {
+      const aAlpha = (p-0.4)/0.6;
+      const atm = ctx.createRadialGradient(cx,cy,earthR*0.96,cx,cy,earthR*1.1);
+      atm.addColorStop(0,`rgba(100,170,230,${0.08*aAlpha})`); atm.addColorStop(1,'transparent');
+      ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx,cy,earthR*1.1,0,6.28); ctx.fill();
+    }
+
+    // Remaining debris falling inward (decreasing)
+    const debrisLeft = Math.floor(40*(1-p*0.9));
+    for (let i=0; i<debrisLeft; i++) {
+      const a = i*0.16+t*0.4;
+      const d = earthR*(1.5+Math.sin(i*2)*0.5) * (1-p*0.3);
+      const dx = cx+Math.cos(a)*d, dy = cy+Math.sin(a)*d*0.35;
+      ctx.fillStyle = `rgba(180,180,190,${0.05*(1-p)})`;
+      ctx.beginPath(); ctx.arc(dx,dy,0.7,0,6.28); ctx.fill();
+    }
+
+    // Moon coalescing — starts as clump in debris, becomes sphere
+    const moonPhase = clamp((p-0.2)/0.8, 0, 1);
+    if (moonPhase > 0) {
+      const moonDist = earthR*(3-moonPhase*0.8);
+      const moonA = t*0.5;
+      const moonX = cx+Math.cos(moonA)*moonDist;
+      const moonY = cy+Math.sin(moonA)*moonDist*0.35;
+      const moonR = R*0.15*moonPhase;
+
+      // Moon growing from debris clump
+      if (moonPhase < 0.5) {
+        // Clump of debris
+        for (let i=0; i<8; i++) {
+          const ca = i*0.8+t*0.3;
+          const cd = moonR*(1+Math.sin(i)*0.5);
+          ctx.fillStyle = `rgba(180,184,190,${0.1+moonPhase*0.1})`;
+          ctx.beginPath(); ctx.arc(moonX+Math.cos(ca)*cd, moonY+Math.sin(ca)*cd, 1, 0, 6.28); ctx.fill();
+        }
+      }
+      // Solid moon
+      if (moonR > 1) {
+        drawGradBody(ctx, moonX, moonY, moonR, '#c4c8cc', '#909498', '#606468');
+        if (moonPhase > 0.6) label(ctx, moonX, moonY+moonR+10, 'Moon', 'rgba(180,180,180,0.12)', 8);
+      }
+      // Moon orbit trace
+      if (moonPhase > 0.4) {
+        drawOrbit(ctx, cx, cy, moonDist, moonDist*0.35, `rgba(176,184,192,${0.03*moonPhase})`);
       }
     }
 
-    label(ctx, cx, cy+R*1.05+16, 'Earth', '#4088cc25', 10);
-    label(ctx, moonX, moonY+moonR+10, 'Moon', 'rgba(180,180,180,0.15)', 8);
-    label(ctx, cx, cy-R*1.5, 'Theia → 10.7% of final mass', 'rgba(160,96,144,0.1)', 9);
+    label(ctx, cx, cy+earthR+16, 'Earth', `rgba(64,136,204,${0.1+p*0.1})`, 10);
+    if (p > 0.5) label(ctx, cx, cy-earthR-14, 'Theia → 10.7% of final mass', 'rgba(160,96,144,0.08)', 9);
   }
 }
 
@@ -1015,17 +1199,13 @@ function anim9(t) {
   label(ctx, cx-R*1.8, cy-8, '← former sub-Venus point', 'rgba(232,168,48,0.07)', 8);
 
   // Feature annotations (subtle)
-  const annAlpha = 'rgba(200,180,160,0.08)';
+  const annAlpha = 'rgba(200,180,160,0.1)';
   label(ctx, cx+R*0.8, cy-R*0.5, 'Borealis Basin', annAlpha, 7);
   label(ctx, thX-R*0.3, thY+R*0.15, 'Tharsis', annAlpha, 7);
+  label(ctx, cx, cy+R+16, 'Mars', '#c0503020', 10);
 
-  // Moon comparison outline (ghost)
-  ctx.strokeStyle = 'rgba(176,184,192,0.04)'; ctx.lineWidth = 1;
-  ctx.setLineDash([2,6]);
-  ctx.beginPath(); ctx.arc(cx+R*2.5, cy+R*0.5, R*0.48, 0, 6.28); ctx.stroke();
-  ctx.setLineDash([]);
-  label(ctx, cx+R*2.5, cy+R*0.5+R*0.48+10, 'Moon (to scale)', 'rgba(176,184,192,0.06)', 7);
-  drawGradBody(ctx, cx+R*2.5, cy+R*0.5, R*0.48, '#b0b4b8', '#808488', '#585c60');
+  // Density comparison text (no second body)
+  label(ctx, cx, h*0.92, 'density: 3.93 g/cm³ — too low for a planet', 'rgba(136,144,168,0.06)', 9);
 }
 
 // ═══════════════════════════════════════════
