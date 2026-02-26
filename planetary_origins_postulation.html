@@ -3,512 +3,1194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Postulation on Planetary Origins</title>
+<title>A Postulation on Planetary Origins — J.W. Garrett</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap');
 
 :root {
   --void: #060810;
-  --dim: #1a1e2e;
+  --dim: #121620;
   --muted: #3a4060;
   --text: #8890a8;
-  --bright: #c0c8e0;
+  --bright: #c8d0e8;
   --accent: #e8c870;
-  --venus: #e8a830;
-  --mars: #c05030;
-  --earth: #4080c0;
-  --saturn: #d0b060;
-  --sun: #f0d060;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
 body {
   background: var(--void);
   color: var(--text);
   font-family: 'Cormorant Garamond', Georgia, serif;
   overflow-x: hidden;
-  cursor: default;
 }
 
-canvas {
-  display: block;
-  position: fixed;
-  top: 0; left: 0;
-  z-index: 0;
-}
-
-.content {
+.scene {
   position: relative;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.section {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 60px 40px;
-  pointer-events: auto;
+  overflow: hidden;
 }
 
-h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 300;
-  font-size: clamp(28px, 5vw, 56px);
-  color: var(--bright);
-  letter-spacing: 0.08em;
+.scene canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+}
+
+.scene .overlay {
+  position: relative;
+  z-index: 1;
   text-align: center;
+  padding: 40px 30px;
+  max-width: 780px;
+  pointer-events: none;
+}
+
+.overlay * { pointer-events: none; }
+
+h1 {
+  font-weight: 300;
+  font-size: clamp(24px, 4.5vw, 50px);
+  color: var(--bright);
+  letter-spacing: 0.06em;
+  line-height: 1.35;
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1.5s ease, transform 1.5s ease;
-  line-height: 1.3;
+  transform: translateY(25px);
+  transition: opacity 1.4s ease, transform 1.4s ease;
+  text-shadow: 0 0 40px rgba(6,8,16,0.9);
 }
 
 h2 {
-  font-family: 'Cormorant Garamond', serif;
   font-weight: 300;
-  font-size: clamp(20px, 3vw, 36px);
+  font-size: clamp(16px, 2.5vw, 28px);
   color: var(--text);
-  letter-spacing: 0.05em;
-  text-align: center;
-  margin-top: 20px;
+  letter-spacing: 0.04em;
+  margin-top: 14px;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 1.8s ease 0.3s, transform 1.8s ease 0.3s;
+  transform: translateY(18px);
+  transition: opacity 1.6s ease 0.25s, transform 1.6s ease 0.25s;
+  text-shadow: 0 0 30px rgba(6,8,16,0.9);
 }
 
 .narrative {
-  max-width: 680px;
-  font-size: clamp(16px, 2.2vw, 22px);
+  font-size: clamp(14px, 1.8vw, 20px);
   font-weight: 300;
-  line-height: 1.9;
-  text-align: center;
+  line-height: 2;
   color: var(--text);
+  margin-top: 18px;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 2s ease 0.5s, transform 2s ease 0.5s;
+  transform: translateY(18px);
+  transition: opacity 1.8s ease 0.4s, transform 1.8s ease 0.4s;
+  text-shadow: 0 0 20px rgba(6,8,16,0.95), 0 0 40px rgba(6,8,16,0.8);
 }
 
-.narrative em {
-  color: var(--bright);
-  font-style: italic;
-}
+.narrative em { color: var(--bright); font-style: italic; }
+.ven { color: #e8a830; }
+.mar { color: #c05030; }
+.ear { color: #4088cc; }
+.sat { color: #d0b060; }
+.the { color: #a06090; }
 
-.narrative .venus-text { color: var(--venus); }
-.narrative .mars-text { color: var(--mars); }
-.narrative .earth-text { color: var(--earth); }
-.narrative .saturn-text { color: var(--saturn); }
-
-.data-line {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(11px, 1.4vw, 15px);
-  font-weight: 300;
-  color: var(--muted);
-  letter-spacing: 0.04em;
-  margin: 6px 0;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-}
-
-.data-line.visible { opacity: 1; }
-
-.data-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  max-width: 900px;
-  width: 100%;
-  margin: 30px 0;
-}
-
-.data-card {
-  background: rgba(26, 30, 46, 0.6);
-  border: 1px solid rgba(58, 64, 96, 0.3);
+.ratio {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid rgba(232,200,112,0.25);
   border-radius: 2px;
-  padding: 20px;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-.data-card .label {
+  color: var(--accent);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+  font-size: 0.82em;
+  background: rgba(6,8,16,0.6);
 }
 
-.data-card .value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  font-weight: 300;
-  color: var(--bright);
-}
-
-.data-card .unit {
+.mono {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: 0.8em;
   color: var(--muted);
-  margin-top: 4px;
-}
-
-.ecc-bar-container {
-  max-width: 700px;
-  width: 100%;
-  margin: 30px 0;
-}
-
-.ecc-row {
-  display: flex;
-  align-items: center;
-  margin: 8px 0;
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.ecc-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  width: 90px;
-  text-align: right;
-  padding-right: 15px;
-  color: var(--muted);
-}
-
-.ecc-bar {
-  height: 3px;
-  border-radius: 1px;
-  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
-  width: 0;
-}
-
-.ecc-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  padding-left: 10px;
-  color: var(--muted);
-  min-width: 60px;
 }
 
 .divider {
-  width: 60px;
+  width: 50px;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--muted), transparent);
-  margin: 40px auto;
+  margin: 24px auto;
   opacity: 0;
-  transition: opacity 2s ease;
+  transition: opacity 2s ease 0.3s;
 }
 
-.visible h1, .visible h2, .visible .narrative,
-.visible .data-card, .visible .divider {
+.visible h1, .visible h2, .visible .narrative, .visible .divider,
+.visible .stat-row, .visible .footer-line {
   opacity: 1;
   transform: translateY(0);
 }
 
-.visible .ecc-row {
-  opacity: 1;
-  transform: translateX(0);
+.stat-row {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 22px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 1.5s ease 0.6s, transform 1.5s ease 0.6s;
 }
 
-.footer-note {
+.stat-box {
+  background: rgba(6, 8, 16, 0.7);
+  border: 1px solid rgba(58,64,96,0.3);
+  padding: 14px 22px;
+  text-align: center;
+  border-radius: 2px;
+  backdrop-filter: blur(6px);
+}
+
+.stat-box .val {
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--bright);
+}
+
+.stat-box .lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.footer-line {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   color: var(--muted);
-  text-align: center;
-  padding: 60px 20px;
   letter-spacing: 0.05em;
+  margin-top: 36px;
   opacity: 0;
-  transition: opacity 2s ease;
-}
-
-.visible .footer-note { opacity: 0.6; }
-
-.ratio-highlight {
-  display: inline-block;
-  padding: 2px 8px;
-  border: 1px solid rgba(232, 200, 112, 0.3);
-  border-radius: 2px;
-  color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85em;
+  transition: opacity 2s ease 0.8s;
 }
 </style>
 </head>
 <body>
 
-<canvas id="stars"></canvas>
-
-<div class="content">
-
-  <!-- 1. OPENING -->
-  <div class="section" id="s1">
+<!-- SLIDE 1: Solar System Overview -->
+<div class="scene" id="s1">
+  <canvas id="c1"></canvas>
+  <div class="overlay">
     <h1>What if we read the orbits<br>as a single event?</h1>
     <div class="divider"></div>
     <h2>A postulation</h2>
   </div>
+</div>
 
-  <!-- 2. THE ECCENTRICITIES -->
-  <div class="section" id="s2">
-    <h1>The Orbital Eccentricities</h1>
-    <p class="narrative">Measured to high precision. Unexplained as a set.</p>
-    <div class="ecc-bar-container" id="ecc-bars"></div>
-  </div>
-
-  <!-- 3. THE PATTERN -->
-  <div class="section" id="s3">
-    <h1>Center the view on Earth</h1>
+<!-- SLIDE 2: Eccentricities Measured -->
+<div class="scene" id="s2">
+  <canvas id="c2"></canvas>
+  <div class="overlay">
+    <h1>Orbital Eccentricities</h1>
+    <div class="divider"></div>
     <p class="narrative">
-      Remove Earth from the dataset. Plot eccentricity against distance from 1 AU.<br>
-      The pattern has a <em>center point</em>.
-    </p>
-    <div class="data-grid">
-      <div class="data-card">
-        <div class="label">Inward Damage</div>
-        <div class="value" style="color:var(--venus)">0.2124</div>
-        <div class="unit">Mercury + Venus</div>
-      </div>
-      <div class="data-card">
-        <div class="label">Outward Damage</div>
-        <div class="value" style="color:var(--mars)">0.2546</div>
-        <div class="unit">Mars → Neptune</div>
-      </div>
-      <div class="data-card">
-        <div class="label">Gas Giant Plateau</div>
-        <div class="value">0.051</div>
-        <div class="unit">± 0.004 — uniform</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. THE RATIO -->
-  <div class="section" id="s4">
-    <h1>The Inner Ratio</h1>
-    <p class="narrative">
-      Mercury's eccentricity divided by Mars's eccentricity:<br><br>
-      <span class="ratio-highlight">0.2056 / 0.0934 = 2.201</span><br><br>
-      This is within 5.3% of the ΞĐ cellular resistance constant <span class="ratio-highlight">γ = 2.09</span><br><br>
-      The bloom lattice distributed the perturbation energy asymmetrically —<br>
-      through the geometric impedance of the gradient field itself.
+      Measured to high precision. Never explained as a set.<br>
+      Center the view on <span class="ear">Earth</span>. Remove it. The pattern emerges.<br><br>
+      <span class="ratio">Mercury / Mars = 2.201 ≈ γ (cellular resistance)</span><br>
+      <span class="ratio">Saturn excess ≈ Neptune deficit — 98.3%</span>
     </p>
   </div>
+</div>
 
-  <!-- 5. SATURN AND NEPTUNE -->
-  <div class="section" id="s5">
-    <h1>The Outer Balance</h1>
-    <p class="narrative">
-      Saturn sits above the gas giant plateau by <span class="ratio-highlight">0.0085</span><br><br>
-      Neptune sits below all expectations at <span class="ratio-highlight">0.0086</span><br><br>
-      <em>98.3% match.</em><br><br>
-      Saturn absorbed energy from a direct encounter.<br>
-      Neptune transferred its energy to a body now in the outer system.
-    </p>
-  </div>
-
-  <!-- 6. THE BINARY -->
-  <div class="section" id="s6">
+<!-- SLIDE 3: Pre-Capture Binary — No Earth -->
+<div class="scene" id="s3">
+  <canvas id="c3"></canvas>
+  <div class="overlay">
     <h1>Before</h1>
     <div class="divider"></div>
     <p class="narrative">
-      Consider a pre-capture inner solar system:<br><br>
-      <span class="venus-text">Venus</span> at approximately 0.85 AU<br>
-      with a binary companion — <span class="mars-text">Mars</span><br><br>
-      Mass ratio: <span class="ratio-highlight">7.58</span><br>
-      Compare Pluto/Charon: 8.3<br><br>
-      A binary planet system. Tidally locked.<br>
-      <span class="mars-text">Mars</span>'s Tharsis hemisphere permanently facing <span class="venus-text">Venus</span>.
+      <span class="ven">Venus</span> at 0.85 AU. Tidally locked companion: <span class="mar">Mars</span>.<br>
+      A smaller satellite — <span class="the">Theia</span> — orbits closer.<br><br>
+      Mass ratio <span class="ratio">7.58 : 1</span> — compare Pluto–Charon at 8.3.<br><br>
+      No Earth. Not yet.
     </p>
   </div>
+</div>
 
-  <!-- 7. THE ARRIVAL -->
-  <div class="section" id="s7">
-    <h1>The Arrival</h1>
+<!-- SLIDE 4: Rogue Earth + Satellite, Far Away -->
+<div class="scene" id="s4">
+  <canvas id="c4"></canvas>
+  <div class="overlay">
+    <h1>The Stranger</h1>
     <div class="divider"></div>
     <p class="narrative">
-      A rogue planet enters from interstellar space.<br><br>
-      At <span class="saturn-text">Saturn</span>, it loses its small icy moon.<br>
-      The trajectory bends sunward.<br><br>
-      It reaches the inner system at 46 km/s —<br>
-      only 0.27 km/s above solar escape velocity.<br><br>
-      It encounters the <span class="venus-text">Venus</span>–<span class="mars-text">Mars</span> binary.
+      A rogue planet adrift in interstellar space.<br>
+      Ice surface. Active core. A small icy moon in tow.<br><br>
+      Approaching the solar system at <span class="ratio">v∞ ≈ 5 km/s</span>
     </p>
   </div>
+</div>
 
-  <!-- 8. THE COLLISION -->
-  <div class="section" id="s8">
-    <h1>The Event</h1>
+<!-- SLIDE 5: Saturn Encounter — Moon Stripped -->
+<div class="scene" id="s5">
+  <canvas id="c5"></canvas>
+  <div class="overlay">
+    <h1>Saturn Sets the Trap</h1>
     <div class="divider"></div>
     <p class="narrative">
-      The rogue collides with a smaller satellite of <span class="venus-text">Venus</span>.<br><br>
-      The collision brakes the rogue into solar capture.<br>
-      The gravitational disruption liberates <span class="mars-text">Mars</span> from orbit.<br><br>
-      <span class="mars-text">Mars</span> is ejected to 1.5 AU.<br>
-      <span class="venus-text">Venus</span> is pushed to 0.72 AU.<br>
-      The rogue — now <span class="earth-text">Earth</span> — settles at 1.0 AU.<br><br>
-      Debris from the collision is captured as a new moon.
+      Closest approach strips the icy moon.<br>
+      <span class="sat">Saturn</span> bends the trajectory sunward — Δv of 22 km/s.<br><br>
+      <span class="mono">The moon will become Saturn's rings —<br>
+      still disintegrating 4.5 billion years later.</span>
     </p>
   </div>
+</div>
 
-  <!-- 9. THE EVIDENCE MAP -->
-  <div class="section" id="s9">
-    <h1>Written in the Terrain</h1>
+<!-- SLIDE 6: Venus–Mars Binary Detail -->
+<div class="scene" id="s6">
+  <canvas id="c6"></canvas>
+  <div class="overlay">
+    <h1>The Binary</h1>
     <div class="divider"></div>
     <p class="narrative">
-      <span class="mars-text">Mars</span>'s crustal dichotomy — the hemispheric asymmetry of a tidally locked body.<br><br>
-      <span class="mars-text">Mars</span>'s Tharsis Bulge — the sub-<span class="venus-text">Venus</span> tidal heating point, frozen in place.<br><br>
-      Valles Marineris — the fracture where <span class="venus-text">Venus</span>'s tidal grip released.<br><br>
-      <span class="venus-text">Venus</span>'s retrograde rotation — no gyroscopic anchor after losing its companion.<br><br>
-      <span class="saturn-text">Saturn</span>'s rings — the rogue's original moon, still disintegrating.<br><br>
-      Every feature is a fossil of one event.
+      <span class="ven">Venus</span> — 6,052 km — the primary.<br>
+      <span class="mar">Mars</span> — 3,390 km — the companion.<br>
+      <span class="the">Theia</span> — smaller — a secondary satellite.<br><br>
+      Size ratio preserved to scale. A genuine binary.<br>
+      Stable for billions of years — until something arrives.
     </p>
   </div>
+</div>
 
-  <!-- 10. THE CONSTRAINTS -->
-  <div class="section" id="s10">
-    <h1>29 Constraints. 6 Parameters.</h1>
+<!-- SLIDE 7: Earth Enters — Disruption -->
+<div class="scene" id="s7">
+  <canvas id="c7"></canvas>
+  <div class="overlay">
+    <h1>The Disruption</h1>
     <div class="divider"></div>
-    <div class="data-grid">
-      <div class="data-card">
-        <div class="label">Overdetermination</div>
-        <div class="value">4.8 : 1</div>
-      </div>
-      <div class="data-card">
-        <div class="label">Bayes Factor vs Null</div>
-        <div class="value">10<sup style="font-size:18px">14</sup></div>
-      </div>
-      <div class="data-card">
-        <div class="label">Mass Conservation</div>
-        <div class="value">10<sup style="font-size:18px">-14</sup></div>
-        <div class="unit">percent</div>
-      </div>
+    <p class="narrative">
+      <span class="ear">The rogue</span> arrives at 46 km/s.<br>
+      Only <span class="ratio">0.27 km/s above escape velocity</span>.<br><br>
+      It strikes <span class="the">Theia</span>. Brakes into capture.<br>
+      The gravitational shock liberates <span class="mar">Mars</span>.<br><br>
+      <span class="ven">Venus</span> pushed to 0.72 AU. <span class="mar">Mars</span> flung to 1.52 AU.<br>
+      <span class="ear">Earth</span> settles at 1.0 AU. Debris becomes the Moon.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 8: Collision with Theia -->
+<div class="scene" id="s8">
+  <canvas id="c8"></canvas>
+  <div class="overlay">
+    <h1>The Collision</h1>
+    <div class="divider"></div>
+    <p class="narrative">
+      <span class="ear">Rogue</span> absorbs <span class="the">Theia</span> — 10.7% of final mass.<br>
+      Braking: <span class="ratio">2.63 km/s Δv</span>. Below escape. Captured.<br><br>
+      Debris disk → Moon. Theia's iron → D″ layer.<br>
+      Two bloom histories merge — magnetic field reversals begin.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 9: Mars as Dead Satellite -->
+<div class="scene" id="s9">
+  <canvas id="c9"></canvas>
+  <div class="overlay">
+    <h1>A Dead Moon</h1>
+    <div class="divider"></div>
+    <p class="narrative">
+      Crustal dichotomy — hemispheric asymmetry of tidal lock.<br>
+      Tharsis Bulge — the sub-<span class="ven">Venus</span> tidal heating point.<br>
+      Valles Marineris — the fracture where <span class="ven">Venus</span>'s grip released.<br>
+      Low density — incomplete differentiation of a satellite.<br>
+      Dead dynamo — never self-sustaining. Ran on <span class="ven">Venus</span>'s bloom.<br><br>
+      <span class="mar">Mars</span> isn't a small planet. <span class="mar">Mars</span> is a <em>dead moon</em>.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 10: Probability -->
+<div class="scene" id="s10">
+  <canvas id="c10"></canvas>
+  <div class="overlay">
+    <h1>The Mathematics</h1>
+    <div class="divider"></div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="val">29</div><div class="lbl">Constraints Satisfied</div></div>
+      <div class="stat-box"><div class="val">6</div><div class="lbl">Free Parameters</div></div>
+      <div class="stat-box"><div class="val">10<sup style="font-size:14px">14</sup></div><div class="lbl">Bayes Factor vs Null</div></div>
     </div>
-    <p class="narrative" style="margin-top:30px">
-      This is not a fit.<br>
-      This is a reconstruction.
+    <p class="narrative" style="margin-top:26px">
+      <span class="ratio">Mass conservation: 1.8 × 10⁻¹⁴ %</span><br><br>
+      Overdetermination ratio: <span class="ratio">4.8 : 1</span><br><br>
+      Probability of chance alignment: <span class="ratio">~10⁻²⁰</span><br><br>
+      This is not a fit. This is a <em>reconstruction</em>.
     </p>
   </div>
+</div>
 
-  <!-- 11. CLOSING -->
-  <div class="section" id="s11">
+<!-- SLIDE 11: Earth Today -->
+<div class="scene" id="s11">
+  <canvas id="c11"></canvas>
+  <div class="overlay">
     <h1>One rogue planet.<br>One transit.<br>One collision.</h1>
     <div class="divider"></div>
-    <h2>Every orbital anomaly in the solar system<br>accounted for.</h2>
-    <p class="footer-note">
+    <h2>Every orbital anomaly in the solar system.</h2>
+    <p class="footer-line">
       J.W. Garrett — VaultSync Solutions Inc. — February 2026<br>
       A postulation within the ΞĐ (Seeth) framework
     </p>
   </div>
-
 </div>
 
 <script>
-// ═══ STARFIELD ═══
-(function() {
-  const canvas = document.getElementById('stars');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-  const stars = [];
-  
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+// ═══════════════════════════════════════════
+// SHARED UTILITIES
+// ═══════════════════════════════════════════
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+function sizeCanvas(id) {
+  const c = document.getElementById(id);
+  const el = c.parentElement;
+  const w = el.clientWidth, h = el.clientHeight;
+  c.width = w * DPR; c.height = h * DPR;
+  c.style.width = w + 'px'; c.style.height = h + 'px';
+  const ctx = c.getContext('2d');
+  ctx.scale(DPR, DPR);
+  return { ctx, w, h };
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// Starfield — shared, seeded
+const stars = [];
+for (let i = 0; i < 500; i++) {
+  stars.push({ x: Math.random(), y: Math.random(), r: Math.random()*1.2+0.2, a: Math.random()*0.35+0.05, p: Math.random()*6.28 });
+}
+function drawStars(ctx, w, h, t) {
+  for (const s of stars) {
+    ctx.fillStyle = `rgba(180,190,220,${s.a*(0.55+0.45*Math.sin(t*0.7+s.p))})`;
+    ctx.beginPath(); ctx.arc(s.x*w, s.y*h, s.r, 0, 6.28); ctx.fill();
   }
-  
-  function init() {
-    resize();
-    for (let i = 0; i < 300; i++) {
-      stars.push({
-        x: Math.random() * W,
-        y: Math.random() * H * 10,
-        r: Math.random() * 1.2 + 0.2,
-        a: Math.random() * 0.5 + 0.1,
-        pulse: Math.random() * Math.PI * 2
-      });
+}
+
+function drawSun(ctx, x, y, r, t) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r*4);
+  g.addColorStop(0, 'rgba(240,216,104,0.85)');
+  g.addColorStop(0.25, 'rgba(240,180,60,0.3)');
+  g.addColorStop(0.6, 'rgba(200,140,40,0.06)');
+  g.addColorStop(1, 'transparent');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r*4, 0, 6.28); ctx.fill();
+  ctx.fillStyle = '#f0d868'; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.28); ctx.fill();
+}
+
+function drawOrbit(ctx, cx, cy, rx, ry, col, dash) {
+  ctx.strokeStyle = col || 'rgba(58,64,96,0.2)';
+  ctx.lineWidth = 0.6;
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry||rx, 0, 0, 6.28); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawBody(ctx, x, y, r, col, glow) {
+  if (glow) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r*3.5);
+    g.addColorStop(0, col+'35'); g.addColorStop(1, col+'00');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r*3.5, 0, 6.28); ctx.fill();
+  }
+  ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.28); ctx.fill();
+}
+
+function drawGradBody(ctx, x, y, r, c1, c2, c3) {
+  const g = ctx.createRadialGradient(x-r*0.25, y-r*0.25, 0, x, y, r);
+  g.addColorStop(0, c1); g.addColorStop(0.6, c2); g.addColorStop(1, c3);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.28); ctx.fill();
+}
+
+function label(ctx, x, y, txt, col, sz) {
+  ctx.font = `${sz||10}px 'JetBrains Mono',monospace`;
+  ctx.fillStyle = col||'rgba(136,144,168,0.4)';
+  ctx.textAlign = 'center'; ctx.fillText(txt, x, y); ctx.textAlign = 'left';
+}
+
+function drawRings(ctx, x, y, r) {
+  ctx.strokeStyle = 'rgba(208,176,96,0.25)'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.ellipse(x, y, r*1.9, r*0.5, -0.15, 0, 6.28); ctx.stroke();
+  ctx.strokeStyle = 'rgba(208,176,96,0.12)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(x, y, r*2.3, r*0.65, -0.15, 0, 6.28); ctx.stroke();
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 1: SOLAR SYSTEM OVERVIEW
+// ═══════════════════════════════════════════
+function anim1(t) {
+  const {ctx,w,h} = sizeCanvas('c1');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx=w*0.5, cy=h*0.5;
+  const scale = Math.min(w,h)*0.044;
+  drawSun(ctx, cx, cy, 14, t);
+
+  const P = [
+    {au:0.39, c:'#a09080', r:2.5, s:4.15, n:'Mercury'},
+    {au:0.72, c:'#e8a830', r:5,   s:1.63, n:'Venus'},
+    {au:1.00, c:'#4088cc', r:5.5, s:1.00, n:'Earth'},
+    {au:1.52, c:'#c05030', r:3.5, s:0.53, n:'Mars'},
+    {au:5.20, c:'#c0a870', r:9,   s:0.084,n:'Jupiter'},
+    {au:7.00, c:'#d0b060', r:8,   s:0.034,n:'Saturn', rings:true},
+    {au:8.50, c:'#40b0b0', r:5,   s:0.012,n:'Uranus'},
+    {au:9.50, c:'#3070d0', r:5,   s:0.006,n:'Neptune'},
+  ];
+
+  for (const p of P) {
+    const orb = p.au*scale;
+    drawOrbit(ctx, cx, cy, orb, orb*0.93);
+    const a = t*p.s + p.au*2.1;
+    const px = cx+Math.cos(a)*orb, py = cy+Math.sin(a)*orb*0.93;
+    if (p.rings) drawRings(ctx, px, py, p.r);
+    drawBody(ctx, px, py, p.r, p.c);
+    label(ctx, px, py+p.r+11, p.n, p.c+'50', 8);
+  }
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 2: ECCENTRICITIES — bars + orbits
+// ═══════════════════════════════════════════
+function anim2(t) {
+  const {ctx,w,h} = sizeCanvas('c2');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx=w*0.5, cy=h*0.5;
+  const scale = Math.min(w,h)*0.055;
+  drawSun(ctx, cx, cy, 7, t);
+
+  const P = [
+    {n:'Mercury',au:0.39,e:0.2056,c:'#a09080',r:2.5,s:3.5},
+    {n:'Venus',  au:0.72,e:0.0068,c:'#e8a830',r:4,  s:1.5},
+    {n:'Earth',  au:1.00,e:0.0167,c:'#4088cc',r:4.5,s:1.0},
+    {n:'Mars',   au:1.52,e:0.0934,c:'#c05030',r:3,  s:0.5},
+    {n:'Jupiter',au:3.00,e:0.0489,c:'#c0a870',r:6,  s:0.10},
+    {n:'Saturn', au:4.00,e:0.0565,c:'#d0b060',r:5.5,s:0.05},
+    {n:'Uranus', au:5.00,e:0.0472,c:'#40b0b0',r:4,  s:0.02},
+    {n:'Neptune',au:5.80,e:0.0086,c:'#3070d0',r:4,  s:0.01},
+  ];
+
+  // Earth orbit highlight band
+  const eOrb = 1.0*scale;
+  ctx.strokeStyle = 'rgba(64,136,204,0.08)'; ctx.lineWidth = 14;
+  ctx.beginPath(); ctx.arc(cx, cy, eOrb, 0, 6.28); ctx.stroke();
+
+  for (const p of P) {
+    const a = p.au*scale;
+    const eccVis = p.e * 6; // exaggerated
+    const b = a*(1-eccVis);
+    const off = a*eccVis*0.5;
+
+    ctx.strokeStyle = p.c+'30'; ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.ellipse(cx+off, cy, a, b, 0, 0, 6.28); ctx.stroke();
+
+    const ang = t*p.s + p.au;
+    const px = cx+off+Math.cos(ang)*a, py = cy+Math.sin(ang)*b;
+    drawBody(ctx, px, py, p.r, p.c, true);
+
+    // eccentricity value label
+    label(ctx, px, py-p.r-7, p.e.toFixed(4), p.c+'60', 9);
+    label(ctx, px, py+p.r+11, p.n, p.c+'35', 8);
+  }
+
+  // Eccentricity bar chart (right side)
+  const barX = w*0.84, barW = 4, barMaxH = h*0.28;
+  const barTop = h*0.35;
+  const maxE = 0.22;
+  for (let i=0; i<P.length; i++) {
+    const bh = (P[i].e/maxE)*barMaxH;
+    const by = barTop + barMaxH - bh;
+    const bx = barX + (i-P.length/2)*12;
+    ctx.fillStyle = P[i].c+'60';
+    ctx.fillRect(bx, by, barW, bh);
+    // tick
+    label(ctx, bx+barW/2, barTop+barMaxH+12, P[i].n[0], P[i].c+'40', 7);
+  }
+  label(ctx, barX, barTop-10, 'eccentricity', 'rgba(136,144,168,0.2)', 8);
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 3: PRE-CAPTURE — Venus-Mars-Theia, no Earth
+// ═══════════════════════════════════════════
+function anim3(t) {
+  const {ctx,w,h} = sizeCanvas('c3');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx=w*0.5, cy=h*0.5;
+  const scale = Math.min(w,h)*0.055;
+  drawSun(ctx, cx, cy, 10, t);
+
+  // Mercury
+  const mercOrb = 0.42*scale;
+  drawOrbit(ctx,cx,cy,mercOrb,mercOrb*0.95,'rgba(160,144,128,0.12)');
+  const mA = t*3;
+  drawBody(ctx, cx+Math.cos(mA)*mercOrb, cy+Math.sin(mA)*mercOrb*0.95, 2.5, '#a09080');
+
+  // Venus at 0.85 AU
+  const vOrb = 0.85*scale;
+  drawOrbit(ctx,cx,cy,vOrb,vOrb*0.95,'rgba(232,168,48,0.18)');
+  const vA = t*0.5;
+  const vx = cx+Math.cos(vA)*vOrb, vy = cy+Math.sin(vA)*vOrb*0.95;
+  drawBody(ctx, vx, vy, 7, '#e8a830', true);
+
+  // Mars orbiting Venus
+  const marsR = 38;
+  const marsA = t*2.8;
+  const mx = vx+Math.cos(marsA)*marsR, my = vy+Math.sin(marsA)*marsR;
+  drawOrbit(ctx, vx, vy, marsR, marsR, 'rgba(192,80,48,0.08)');
+  drawBody(ctx, mx, my, 4.5, '#c05030', true);
+
+  // Theia — inner satellite
+  const thR = 22;
+  const thA = t*4.5+1.5;
+  const tx = vx+Math.cos(thA)*thR, ty = vy+Math.sin(thA)*thR;
+  drawOrbit(ctx, vx, vy, thR, thR, 'rgba(160,96,144,0.06)');
+  drawBody(ctx, tx, ty, 2.5, '#a06090');
+
+  // Tidal lock line Venus→Mars
+  ctx.strokeStyle = 'rgba(232,168,48,0.05)'; ctx.lineWidth = 0.8;
+  ctx.setLineDash([4,8]); ctx.beginPath(); ctx.moveTo(vx,vy); ctx.lineTo(mx,my); ctx.stroke(); ctx.setLineDash([]);
+
+  label(ctx, vx, vy+14, 'Venus', '#e8a83040', 10);
+  label(ctx, mx, my+12, 'Mars', '#c0503040', 10);
+  label(ctx, tx, ty-8, 'Theia', '#a0609040', 8);
+
+  // Ghost "no Earth" zone at 1 AU
+  drawOrbit(ctx,cx,cy,1.0*scale,1.0*scale*0.95,'rgba(64,136,204,0.04)',[3,8]);
+  label(ctx, cx+1.0*scale+8, cy, '← 1 AU (empty)', 'rgba(64,136,204,0.08)', 8);
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 4: ROGUE + SATELLITE — interstellar
+// ═══════════════════════════════════════════
+function anim4(t) {
+  const {ctx,w,h} = sizeCanvas('c4');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  // Distant tiny Sun
+  const sx = w*0.85, sy = h*0.25;
+  ctx.fillStyle = 'rgba(240,216,104,0.5)';
+  ctx.beginPath(); ctx.arc(sx,sy,1.8,0,6.28); ctx.fill();
+  const sg = ctx.createRadialGradient(sx,sy,0,sx,sy,25);
+  sg.addColorStop(0,'rgba(240,216,104,0.12)'); sg.addColorStop(1,'transparent');
+  ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(sx,sy,25,0,6.28); ctx.fill();
+  label(ctx, sx, sy+14, 'Sol (distant)', 'rgba(240,216,104,0.15)', 8);
+
+  // Inner solar system tiny orbits around distant sun
+  for (let i = 0; i < 3; i++) {
+    const r = 4+i*3;
+    ctx.strokeStyle = 'rgba(240,216,104,0.04)'; ctx.lineWidth = 0.4;
+    ctx.beginPath(); ctx.arc(sx,sy,r,0,6.28); ctx.stroke();
+  }
+
+  // Rogue Earth — big, icy
+  const ex = w*0.32, ey = h*0.52;
+  const R = Math.min(w,h)*0.06;
+
+  // Glow
+  const ig = ctx.createRadialGradient(ex,ey,0,ex,ey,R*2.5);
+  ig.addColorStop(0,'rgba(100,150,200,0.1)'); ig.addColorStop(1,'transparent');
+  ctx.fillStyle = ig; ctx.beginPath(); ctx.arc(ex,ey,R*2.5,0,6.28); ctx.fill();
+
+  drawGradBody(ctx, ex, ey, R, '#90bcd8', '#5a8aaa', '#3a6080');
+
+  // Ice cracks
+  ctx.strokeStyle = 'rgba(180,215,240,0.15)'; ctx.lineWidth = 0.6;
+  for (let i=0; i<6; i++) {
+    const a = i*1.05+0.3;
+    ctx.beginPath();
+    ctx.moveTo(ex+Math.cos(a)*R*0.4, ey+Math.sin(a)*R*0.4);
+    ctx.lineTo(ex+Math.cos(a+0.25)*R*0.9, ey+Math.sin(a+0.25)*R*0.9);
+    ctx.stroke();
+  }
+
+  // Moon orbiting rogue
+  const mDist = R*1.8;
+  const mA = t*1.8;
+  drawOrbit(ctx, ex, ey, mDist, mDist*0.7, 'rgba(180,200,220,0.06)');
+  const moonX = ex+Math.cos(mA)*mDist, moonY = ey+Math.sin(mA)*mDist*0.7;
+  drawBody(ctx, moonX, moonY, 4, '#b0c8d8');
+  label(ctx, moonX, moonY+10, 'icy moon', 'rgba(176,200,216,0.2)', 7);
+
+  // Velocity vector
+  ctx.strokeStyle = 'rgba(180,200,220,0.12)'; ctx.lineWidth = 1;
+  ctx.setLineDash([5,5]);
+  const vEnd = {x: ex+R*5, y: ey-R*2};
+  ctx.beginPath(); ctx.moveTo(ex+R*1.5,ey-R*0.3); ctx.lineTo(vEnd.x,vEnd.y); ctx.stroke();
+  ctx.setLineDash([]);
+  // arrowhead
+  ctx.fillStyle = 'rgba(180,200,220,0.12)';
+  ctx.beginPath(); ctx.moveTo(vEnd.x,vEnd.y); ctx.lineTo(vEnd.x-8,vEnd.y-4); ctx.lineTo(vEnd.x-6,vEnd.y+5); ctx.fill();
+  label(ctx, vEnd.x-20, vEnd.y-10, 'v∞ ≈ 5 km/s', 'rgba(180,200,220,0.15)', 9);
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 5: SATURN ENCOUNTER
+// ═══════════════════════════════════════════
+function anim5(t) {
+  const {ctx,w,h} = sizeCanvas('c5');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const sx = w*0.58, sy = h*0.48;
+  // Saturn
+  drawGradBody(ctx, sx, sy, 24, '#e0c868', '#c0a040', '#907828');
+  drawRings(ctx, sx, sy, 24);
+  label(ctx, sx, sy+38, 'Saturn', '#d0b06040', 10);
+
+  // Hyperbolic trajectory
+  const T = (t*0.35) % 6.28;
+  ctx.strokeStyle = 'rgba(90,138,170,0.15)'; ctx.lineWidth = 1;
+  ctx.setLineDash([3,5]);
+  ctx.beginPath();
+  for (let i=0; i<=60; i++) {
+    const tt = (i/60)*Math.PI*0.9 - Math.PI*0.45;
+    const r = 130/(1+0.75*Math.cos(tt));
+    const px = sx-70+r*Math.cos(tt+1.1);
+    const py = sy+r*Math.sin(tt+1.1);
+    if (i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Rogue position
+  const rPhase = (T % (Math.PI*0.9)) - Math.PI*0.45;
+  const rR = 130/(1+0.75*Math.cos(rPhase));
+  const rx = sx-70+rR*Math.cos(rPhase+1.1);
+  const ry = sy+rR*Math.sin(rPhase+1.1);
+  drawBody(ctx, rx, ry, 9, '#5a8aaa', true);
+
+  // Moon stripping — when close to Saturn
+  const dist = Math.hypot(rx-sx, ry-sy);
+  const closeness = clamp(1-dist/160, 0, 1);
+
+  if (closeness > 0.15) {
+    // Moon being pulled toward Saturn
+    const moonX = lerp(rx, sx, closeness*0.65);
+    const moonY = lerp(ry, sy, closeness*0.65);
+    drawBody(ctx, moonX, moonY, 3*(1-closeness*0.3), '#b0c8d8');
+    // Tidal stream
+    ctx.strokeStyle = `rgba(176,200,216,${closeness*0.15})`;
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.moveTo(rx,ry);
+    ctx.quadraticCurveTo((rx+moonX)/2+10, (ry+moonY)/2-10, moonX, moonY);
+    ctx.stroke();
+    // Particle debris
+    for (let i=0; i<8; i++) {
+      const tt = i/8;
+      const dx = lerp(rx,moonX,tt) + Math.sin(t*3+i)*4;
+      const dy = lerp(ry,moonY,tt) + Math.cos(t*2.5+i)*4;
+      ctx.fillStyle = `rgba(176,200,216,${closeness*0.08})`;
+      ctx.beginPath(); ctx.arc(dx,dy,0.8,0,6.28); ctx.fill();
+    }
+  } else {
+    // Moon still with rogue
+    const mA = t*2.2;
+    drawBody(ctx, rx+Math.cos(mA)*16, ry+Math.sin(mA)*16, 3, '#b0c8d8');
+  }
+
+  // Exit trajectory bend sunward
+  ctx.strokeStyle = 'rgba(90,138,170,0.08)'; ctx.lineWidth = 1;
+  ctx.setLineDash([2,5]);
+  ctx.beginPath();
+  ctx.moveTo(sx-120, sy+90);
+  ctx.quadraticCurveTo(sx-160, sy+50, w*0.08, h*0.3);
+  ctx.stroke(); ctx.setLineDash([]);
+  label(ctx, w*0.12, h*0.28, '→ sunward', 'rgba(90,138,170,0.12)', 9);
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 6: VENUS–MARS BINARY DETAIL (to scale)
+// ═══════════════════════════════════════════
+function anim6(t) {
+  const {ctx,w,h} = sizeCanvas('c6');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx = w*0.5, cy = h*0.5;
+  const venusR = Math.min(w,h)*0.085;
+  const marsR = venusR*(3390/6052); // TRUE ratio
+  const theiaR = venusR*0.18;
+
+  // Venus
+  drawGradBody(ctx, cx, cy, venusR, '#f0c040', '#d09020', '#a06810');
+  // atmosphere
+  const vAtm = ctx.createRadialGradient(cx,cy,venusR*0.92,cx,cy,venusR*1.12);
+  vAtm.addColorStop(0,'rgba(240,192,64,0.08)'); vAtm.addColorStop(1,'transparent');
+  ctx.fillStyle = vAtm; ctx.beginPath(); ctx.arc(cx,cy,venusR*1.12,0,6.28); ctx.fill();
+
+  // Mars orbit
+  const marsOrb = venusR*3;
+  drawOrbit(ctx, cx, cy, marsOrb, marsOrb, 'rgba(192,80,48,0.08)');
+  const marsAng = t*0.7;
+  const mx = cx+Math.cos(marsAng)*marsOrb, my = cy+Math.sin(marsAng)*marsOrb;
+
+  // Tidal lock line
+  ctx.strokeStyle = 'rgba(232,168,48,0.04)'; ctx.lineWidth = 0.8;
+  ctx.setLineDash([5,10]); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(mx,my); ctx.stroke(); ctx.setLineDash([]);
+
+  // Mars with Tharsis on Venus-facing side
+  drawGradBody(ctx, mx, my, marsR, '#e06838', '#b04028', '#803020');
+  // Tharsis bulge
+  const tharsisA = marsAng + Math.PI;
+  const tX = mx+Math.cos(tharsisA)*marsR*0.4, tY = my+Math.sin(tharsisA)*marsR*0.4;
+  ctx.fillStyle = 'rgba(220,120,60,0.25)';
+  ctx.beginPath(); ctx.arc(tX,tY,marsR*0.32,0,6.28); ctx.fill();
+
+  // Theia orbit
+  const theiaOrb = venusR*1.7;
+  drawOrbit(ctx, cx, cy, theiaOrb, theiaOrb, 'rgba(160,96,144,0.06)');
+  const theiaAng = t*1.4+2;
+  const thX = cx+Math.cos(theiaAng)*theiaOrb, thY = cy+Math.sin(theiaAng)*theiaOrb;
+  drawBody(ctx, thX, thY, theiaR, '#a06090', true);
+
+  // Size labels
+  label(ctx, cx, cy+venusR+16, '6,052 km', '#e8a83035', 10);
+  label(ctx, mx, my+marsR+14, '3,390 km', '#c0503035', 10);
+  label(ctx, thX, thY-theiaR-8, 'Theia', '#a0609030', 8);
+
+  // Ratio indicator
+  label(ctx, cx, h*0.9, 'mass ratio 7.58 : 1', 'rgba(136,144,168,0.12)', 10);
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 7: DISRUPTION EVENT — animated sequence
+// ═══════════════════════════════════════════
+function anim7(t) {
+  const {ctx,w,h} = sizeCanvas('c7');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx=w*0.5, cy=h*0.5;
+  const scale = Math.min(w,h)*0.055;
+  drawSun(ctx, cx, cy, 7, t);
+
+  // Phase loops: 0→2 approach, 2→3 collision flash, 3→6 separation
+  const phase = (t*0.12) % 6;
+
+  if (phase < 2.5) {
+    // Venus-Mars binary, Earth approaching
+    const vOrb = 0.85*scale;
+    drawOrbit(ctx,cx,cy,vOrb,vOrb*0.95,'rgba(232,168,48,0.12)');
+    const vA = t*0.4;
+    const vx = cx+Math.cos(vA)*vOrb, vy = cy+Math.sin(vA)*vOrb*0.95;
+    drawBody(ctx, vx, vy, 6, '#e8a830', true);
+
+    const marsA = t*2.5;
+    drawBody(ctx, vx+Math.cos(marsA)*28, vy+Math.sin(marsA)*28, 4, '#c05030');
+
+    // Theia
+    const thA = t*4+1;
+    drawBody(ctx, vx+Math.cos(thA)*16, vy+Math.sin(thA)*16, 2.5, '#a06090');
+
+    // Earth approaching
+    const approach = clamp(phase/2.5, 0, 1);
+    const ex = lerp(w*0.92, vx+18, approach);
+    const ey = lerp(h*0.12, vy-8, approach);
+    // Trail
+    ctx.strokeStyle = 'rgba(64,136,204,0.08)'; ctx.lineWidth = 1;
+    ctx.setLineDash([3,6]);
+    ctx.beginPath(); ctx.moveTo(w*0.95,h*0.05); ctx.quadraticCurveTo(w*0.75,h*0.2,ex,ey); ctx.stroke();
+    ctx.setLineDash([]);
+    drawBody(ctx, ex, ey, 6, '#4088cc', true);
+
+    // Flash at moment of collision
+    if (phase > 2.2) {
+      const fl = (phase-2.2)/0.3;
+      const fg = ctx.createRadialGradient(vx,vy,0,vx,vy,100*fl);
+      fg.addColorStop(0,`rgba(255,240,200,${0.5*(1-fl)})`); fg.addColorStop(1,'transparent');
+      ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(vx,vy,100*fl,0,6.28); ctx.fill();
+    }
+  } else {
+    // Aftermath — three bodies separating
+    const sep = clamp((phase-2.5)/3.5, 0, 1);
+
+    // Venus inward
+    const vOrb = lerp(0.85, 0.72, sep)*scale;
+    drawOrbit(ctx,cx,cy,vOrb,vOrb*0.95,'rgba(232,168,48,0.1)');
+    const vA = t*0.4;
+    const vx = cx+Math.cos(vA)*vOrb, vy = cy+Math.sin(vA)*vOrb*0.95;
+    drawBody(ctx, vx, vy, 6, '#e8a830');
+    label(ctx, vx, vy+14, '0.72 AU', '#e8a83025', 8);
+
+    // Earth at 1 AU
+    const eOrb = 1.0*scale;
+    drawOrbit(ctx,cx,cy,eOrb,eOrb*0.97,'rgba(64,136,204,0.1)');
+    const eA = t*0.35+1;
+    const ex = cx+Math.cos(eA)*eOrb, ey = cy+Math.sin(eA)*eOrb*0.97;
+    drawBody(ctx, ex, ey, 6, '#4088cc', true);
+    // Moon
+    drawBody(ctx, ex+Math.cos(t*3.5)*13, ey+Math.sin(t*3.5)*13, 2, '#b0b8c0');
+    label(ctx, ex, ey+14, '1.00 AU', '#4088cc25', 8);
+
+    // Mars outward
+    const mOrb = lerp(0.85, 1.52, sep)*scale;
+    drawOrbit(ctx,cx,cy,mOrb,mOrb*0.94,'rgba(192,80,48,0.08)');
+    const mA = t*0.25+2;
+    const mx = cx+Math.cos(mA)*mOrb, my = cy+Math.sin(mA)*mOrb*0.94;
+    drawBody(ctx, mx, my, 4, '#c05030');
+    label(ctx, mx, my+12, '1.52 AU', '#c0503025', 8);
+
+    // Debris field (fading)
+    const debrisAlpha = 0.12*(1-sep);
+    if (debrisAlpha > 0.01) {
+      for (let i=0; i<20; i++) {
+        const da = i*0.32+t*0.2;
+        const dd = 20+i*5*sep+Math.sin(t+i)*8;
+        const ctrA = t*0.4;
+        const ctrX = cx+Math.cos(ctrA)*0.85*scale;
+        const ctrY = cy+Math.sin(ctrA)*0.85*scale*0.95;
+        ctx.fillStyle = `rgba(180,180,180,${debrisAlpha})`;
+        ctx.beginPath(); ctx.arc(ctrX+Math.cos(da)*dd, ctrY+Math.sin(da)*dd, 0.6, 0, 6.28); ctx.fill();
+      }
     }
   }
-  
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    const scroll = window.scrollY;
-    const t = Date.now() * 0.001;
-    
-    stars.forEach(s => {
-      const y = (s.y - scroll * 0.05) % (H * 10);
-      if (y < -10 || y > H + 10) return;
-      const alpha = s.a * (0.7 + 0.3 * Math.sin(t + s.pulse));
-      ctx.beginPath();
-      ctx.arc(s.x, y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(200, 210, 230, ${alpha})`;
-      ctx.fill();
-    });
-    
-    requestAnimationFrame(draw);
-  }
-  
-  init();
-  draw();
-  window.addEventListener('resize', resize);
-})();
+}
 
-// ═══ ECCENTRICITY BARS ═══
-(function() {
-  const planets = [
-    { name: "Mercury", ecc: 0.2056, color: "#a08060" },
-    { name: "Venus", ecc: 0.0068, color: "#e8a830" },
-    { name: "Earth", ecc: 0.0167, color: "#4080c0" },
-    { name: "Mars", ecc: 0.0934, color: "#c05030" },
-    { name: "Jupiter", ecc: 0.0489, color: "#c0a870" },
-    { name: "Saturn", ecc: 0.0565, color: "#d0b060" },
-    { name: "Uranus", ecc: 0.0472, color: "#40b0b0" },
-    { name: "Neptune", ecc: 0.0086, color: "#3070d0" },
-  ];
-  
-  const container = document.getElementById('ecc-bars');
-  const maxEcc = 0.22;
-  
-  planets.forEach((p, i) => {
-    const row = document.createElement('div');
-    row.className = 'ecc-row';
-    row.style.transitionDelay = `${i * 0.1}s`;
-    
-    row.innerHTML = `
-      <div class="ecc-label">${p.name}</div>
-      <div class="ecc-bar" data-width="${(p.ecc / maxEcc) * 100}" style="background:${p.color}"></div>
-      <div class="ecc-value">${p.ecc.toFixed(4)}</div>
-    `;
-    
-    container.appendChild(row);
-  });
-})();
+// ═══════════════════════════════════════════
+// SLIDE 8: COLLISION WITH THEIA — close-up
+// ═══════════════════════════════════════════
+function anim8(t) {
+  const {ctx,w,h} = sizeCanvas('c8');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
 
-// ═══ SCROLL OBSERVER ═══
-(function() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        
-        // Animate eccentricity bars
-        if (entry.target.id === 's2') {
-          setTimeout(() => {
-            entry.target.querySelectorAll('.ecc-bar').forEach(bar => {
-              bar.style.width = bar.dataset.width + '%';
-            });
-          }, 800);
-        }
+  const cx=w*0.5, cy=h*0.5;
+  const R = Math.min(w,h)*0.1;
+
+  // Collision cycle
+  const phase = (t*0.18) % 5;
+
+  if (phase < 2) {
+    // Approach
+    const p = phase/2;
+    const rogueX = lerp(w*0.15, cx-R*0.3, p);
+    const rogueY = lerp(h*0.7, cy, p);
+    const theiaX = lerp(w*0.85, cx+R*0.3, p);
+    const theiaY = lerp(h*0.3, cy, p);
+
+    // Rogue
+    drawGradBody(ctx, rogueX, rogueY, R, '#90bcd8', '#5a8aaa', '#3a6080');
+    label(ctx, rogueX, rogueY+R+14, 'Rogue', '#4088cc30', 10);
+    // Theia
+    drawGradBody(ctx, theiaX, theiaY, R*0.45, '#c080b0', '#905878', '#604050');
+    label(ctx, theiaX, theiaY+R*0.45+12, 'Theia', '#a0609030', 10);
+
+    // Closing velocity indicator
+    if (p > 0.3) {
+      ctx.strokeStyle = 'rgba(255,200,100,0.06)'; ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.moveTo(rogueX,rogueY); ctx.lineTo(theiaX,theiaY); ctx.stroke();
+      label(ctx, cx, cy-R*1.5, '46 km/s', 'rgba(232,200,112,0.1)', 10);
+    }
+  } else if (phase < 3) {
+    // Impact flash
+    const fl = (phase-2);
+    // Flash
+    const fg = ctx.createRadialGradient(cx,cy,0,cx,cy,R*4*fl);
+    fg.addColorStop(0, `rgba(255,230,180,${0.6*(1-fl)})`);
+    fg.addColorStop(0.3,`rgba(255,180,100,${0.3*(1-fl)})`);
+    fg.addColorStop(1,'transparent');
+    ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(cx,cy,R*4*fl,0,6.28); ctx.fill();
+
+    // Merging body
+    const mergeR = R*(1+fl*0.12);
+    drawGradBody(ctx, cx, cy, mergeR, '#a0b8d0', '#6090b0', '#405870');
+
+    // Debris ejecting
+    for (let i=0; i<30; i++) {
+      const a = i*0.21+t;
+      const d = R*1.5 + fl*R*3*((i%5)/5);
+      const dx = cx+Math.cos(a)*d, dy = cy+Math.sin(a)*d;
+      const dr = 1.2*(1-fl*0.5);
+      ctx.fillStyle = `rgba(200,180,160,${0.15*(1-fl)})`;
+      ctx.beginPath(); ctx.arc(dx,dy,dr,0,6.28); ctx.fill();
+    }
+  } else {
+    // Aftermath — Earth + Moon
+    const p = clamp((phase-3)/2, 0, 1);
+    // Earth forming
+    drawGradBody(ctx, cx, cy, R*1.05, '#5098d0', '#3878b0', '#205070');
+    // Continent hints
+    ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,R*1.05,0,6.28); ctx.clip();
+    ctx.fillStyle = 'rgba(60,140,80,0.15)';
+    ctx.beginPath(); ctx.ellipse(cx+Math.cos(t*0.08)*R*0.4, cy-R*0.2, R*0.22, R*0.45, 0.2, 0, 6.28); ctx.fill();
+    ctx.restore();
+
+    // Moon coalescing from debris
+    const moonDist = R*2.2;
+    const moonA = t*0.6;
+    const moonX = cx+Math.cos(moonA)*moonDist, moonY = cy+Math.sin(moonA)*moonDist*0.35;
+    const moonR = R*0.14*clamp(p*2,0,1);
+    if (moonR > 0.5) {
+      drawGradBody(ctx, moonX, moonY, moonR, '#c4c8cc', '#909498', '#606468');
+    }
+    // Remaining debris ring (fading)
+    if (p < 0.8) {
+      for (let i=0; i<20; i++) {
+        const a = i*0.31+t*0.4;
+        const d = R*1.8+Math.sin(i*1.7)*R*0.5;
+        ctx.fillStyle = `rgba(180,180,180,${0.06*(1-p)})`;
+        ctx.beginPath(); ctx.arc(cx+Math.cos(a)*d, cy+Math.sin(a)*d*0.35, 0.8, 0, 6.28); ctx.fill();
       }
-    });
-  }, { threshold: 0.3 });
-  
-  document.querySelectorAll('.section').forEach(s => observer.observe(s));
-})();
-</script>
+    }
 
+    label(ctx, cx, cy+R*1.05+16, 'Earth', '#4088cc25', 10);
+    label(ctx, moonX, moonY+moonR+10, 'Moon', 'rgba(180,180,180,0.15)', 8);
+    label(ctx, cx, cy-R*1.5, 'Theia → 10.7% of final mass', 'rgba(160,96,144,0.1)', 9);
+  }
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 9: MARS AS DEAD SATELLITE
+// ═══════════════════════════════════════════
+function anim9(t) {
+  const {ctx,w,h} = sizeCanvas('c9');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx=w*0.5, cy=h*0.5;
+  const R = Math.min(w,h)*0.15;
+  const rot = t*0.06;
+
+  // Mars — large, detailed
+  drawGradBody(ctx, cx, cy, R, '#d07040', '#b04830', '#602818');
+
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,6.28); ctx.clip();
+
+  // Crustal dichotomy — northern lowlands darker
+  ctx.fillStyle = 'rgba(70,35,18,0.35)';
+  ctx.beginPath();
+  ctx.ellipse(cx+Math.cos(rot)*R*0.1, cy-R*0.2, R*1.1, R*0.65, 0.08, 0, 6.28);
+  ctx.fill();
+
+  // Tharsis bulge
+  const thX = cx+Math.cos(rot+0.5)*R*0.3, thY = cy+R*0.05;
+  ctx.fillStyle = 'rgba(220,100,50,0.2)';
+  ctx.beginPath(); ctx.arc(thX,thY,R*0.32,0,6.28); ctx.fill();
+  // Olympus Mons
+  ctx.fillStyle = 'rgba(240,130,70,0.25)';
+  ctx.beginPath(); ctx.arc(thX-R*0.12,thY-R*0.08,R*0.07,0,6.28); ctx.fill();
+
+  // Valles Marineris
+  ctx.strokeStyle = 'rgba(55,22,12,0.35)'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(cx+Math.cos(rot+0.3)*R*0.5, cy+R*0.12);
+  ctx.quadraticCurveTo(cx+Math.cos(rot+0.5)*R*0.3, cy+R*0.08, cx+Math.cos(rot+0.7)*R*0.08, cy+R*0.14);
+  ctx.stroke();
+
+  // Polar ice (thin)
+  ctx.fillStyle = 'rgba(220,230,240,0.1)';
+  ctx.beginPath(); ctx.ellipse(cx,cy-R*0.88,R*0.3,R*0.08,0,0,6.28); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx,cy+R*0.9,R*0.25,R*0.06,0,0,6.28); ctx.fill();
+
+  ctx.restore();
+
+  // Thin atmosphere
+  const atm = ctx.createRadialGradient(cx,cy,R*0.95,cx,cy,R*1.06);
+  atm.addColorStop(0,'rgba(200,120,80,0.05)'); atm.addColorStop(1,'transparent');
+  ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx,cy,R*1.06,0,6.28); ctx.fill();
+
+  // Phobos + Deimos
+  const phA = t*2.2; const phD = R*1.25;
+  drawBody(ctx, cx+Math.cos(phA)*phD, cy+Math.sin(phA)*phD*0.35, 1.8, '#887060');
+  const deA = t*1.0+2; const deD = R*1.5;
+  drawBody(ctx, cx+Math.cos(deA)*deD, cy+Math.sin(deA)*deD*0.35, 1, '#887060');
+
+  // Ghost Venus tidal line
+  ctx.strokeStyle = `rgba(232,168,48,${0.025+0.015*Math.sin(t)})`;
+  ctx.lineWidth = 0.5; ctx.setLineDash([4,10]);
+  ctx.beginPath(); ctx.moveTo(cx-R*2.2,cy); ctx.lineTo(cx+R*2.2,cy); ctx.stroke();
+  ctx.setLineDash([]);
+  label(ctx, cx-R*1.8, cy-8, '← former sub-Venus point', 'rgba(232,168,48,0.07)', 8);
+
+  // Feature annotations (subtle)
+  const annAlpha = 'rgba(200,180,160,0.08)';
+  label(ctx, cx+R*0.8, cy-R*0.5, 'Borealis Basin', annAlpha, 7);
+  label(ctx, thX-R*0.3, thY+R*0.15, 'Tharsis', annAlpha, 7);
+
+  // Moon comparison outline (ghost)
+  ctx.strokeStyle = 'rgba(176,184,192,0.04)'; ctx.lineWidth = 1;
+  ctx.setLineDash([2,6]);
+  ctx.beginPath(); ctx.arc(cx+R*2.5, cy+R*0.5, R*0.48, 0, 6.28); ctx.stroke();
+  ctx.setLineDash([]);
+  label(ctx, cx+R*2.5, cy+R*0.5+R*0.48+10, 'Moon (to scale)', 'rgba(176,184,192,0.06)', 7);
+  drawGradBody(ctx, cx+R*2.5, cy+R*0.5, R*0.48, '#b0b4b8', '#808488', '#585c60');
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 10: PROBABILITY VISUALIZATION
+// ═══════════════════════════════════════════
+function anim10(t) {
+  const {ctx,w,h} = sizeCanvas('c10');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx=w*0.5, cy=h*0.5;
+
+  // 29 constraint dots — light up sequentially
+  const cols = 10;
+  const gap = 26;
+  const dotR = 3.5;
+  const gridW = cols*gap;
+  const sx = cx - gridW/2 + gap/2;
+  const sy = cy - 40;
+
+  const cycle = (t*0.4) % 7; // 0→5 light up, 5→7 hold
+
+  for (let i=0; i<29; i++) {
+    const col = i%cols;
+    const row = Math.floor(i/cols);
+    const x = sx + col*gap;
+    const y = sy + row*gap;
+
+    const delay = i*0.14;
+    const lit = clamp((cycle-delay)/0.3, 0, 1);
+
+    if (lit > 0) {
+      const g = ctx.createRadialGradient(x,y,0,x,y,dotR*4);
+      g.addColorStop(0,`rgba(232,200,112,${0.18*lit})`); g.addColorStop(1,'transparent');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x,y,dotR*4,0,6.28); ctx.fill();
+      ctx.fillStyle = `rgba(232,200,112,${0.65*lit})`;
+    } else {
+      ctx.fillStyle = 'rgba(58,64,96,0.2)';
+    }
+    ctx.beginPath(); ctx.arc(x,y,dotR,0,6.28); ctx.fill();
+  }
+
+  // Large ghost "29"
+  ctx.font = '180px "Cormorant Garamond",serif';
+  ctx.fillStyle = 'rgba(232,200,112,0.025)';
+  ctx.textAlign = 'center';
+  ctx.fillText('29', cx, cy+65);
+
+  // "6" ghost (parameters)
+  ctx.font = '80px "Cormorant Garamond",serif';
+  ctx.fillStyle = 'rgba(100,160,220,0.02)';
+  ctx.fillText('6', cx+w*0.3, cy+30);
+  ctx.textAlign = 'left';
+
+  // Bayesian probability bar — 10^14
+  const barY = cy + 80;
+  const barMaxW = w*0.5;
+  const nullW = barMaxW * (1/1e14); // basically invisible
+  const altW = barMaxW;
+  ctx.fillStyle = 'rgba(58,64,96,0.15)';
+  ctx.fillRect(cx-barMaxW/2, barY, barMaxW, 6);
+  const barGrow = clamp((cycle-4)/1, 0, 1);
+  ctx.fillStyle = `rgba(232,200,112,${0.25*barGrow})`;
+  ctx.fillRect(cx-barMaxW/2, barY, barMaxW*barGrow, 6);
+  // Null hypothesis — invisible dot
+  ctx.fillStyle = 'rgba(192,80,48,0.3)';
+  ctx.beginPath(); ctx.arc(cx-barMaxW/2, barY+3, 2, 0, 6.28); ctx.fill();
+
+  label(ctx, cx-barMaxW/2-30, barY+4, 'null', '#c0503030', 8);
+  label(ctx, cx+barMaxW/2+5, barY+4, 'H_D', '#e8c87030', 8);
+}
+
+// ═══════════════════════════════════════════
+// SLIDE 11: EARTH TODAY
+// ═══════════════════════════════════════════
+function anim11(t) {
+  const {ctx,w,h} = sizeCanvas('c11');
+  ctx.clearRect(0,0,w,h);
+  drawStars(ctx,w,h,t);
+
+  const cx=w*0.5, cy=h*0.55;
+  const R = Math.min(w,h)*0.14;
+
+  // Outer glow
+  const og = ctx.createRadialGradient(cx,cy,R,cx,cy,R*4);
+  og.addColorStop(0,'rgba(64,136,204,0.03)'); og.addColorStop(1,'transparent');
+  ctx.fillStyle = og; ctx.beginPath(); ctx.arc(cx,cy,R*4,0,6.28); ctx.fill();
+
+  // Earth
+  drawGradBody(ctx, cx, cy, R, '#5098d0', '#3878b0', '#103050');
+
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,6.28); ctx.clip();
+
+  const rot = t*0.05;
+  // Continents
+  ctx.fillStyle = 'rgba(50,130,70,0.18)';
+  // Americas
+  ctx.beginPath(); ctx.ellipse(cx+Math.cos(rot)*R*0.35, cy-R*0.15, R*0.2, R*0.45, 0.15, 0, 6.28); ctx.fill();
+  // Eurasia
+  ctx.beginPath(); ctx.ellipse(cx+Math.cos(rot+2.5)*R*0.3, cy-R*0.12, R*0.38, R*0.2, -0.08, 0, 6.28); ctx.fill();
+  // Africa
+  ctx.beginPath(); ctx.ellipse(cx+Math.cos(rot+2.2)*R*0.18, cy+R*0.15, R*0.13, R*0.22, 0.12, 0, 6.28); ctx.fill();
+
+  // Ice caps
+  ctx.fillStyle = 'rgba(220,232,244,0.12)';
+  ctx.beginPath(); ctx.ellipse(cx,cy-R*0.87,R*0.45,R*0.1,0,0,6.28); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx,cy+R*0.89,R*0.35,R*0.08,0,0,6.28); ctx.fill();
+
+  // Clouds
+  ctx.fillStyle = 'rgba(220,230,240,0.06)';
+  for (let i=0; i<4; i++) {
+    const ca = rot*1.3+i*1.6;
+    ctx.beginPath();
+    ctx.ellipse(cx+Math.cos(ca)*R*0.5, cy+Math.sin(ca+0.5)*R*0.3, R*0.25, R*0.06, ca*0.5, 0, 6.28);
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  // Atmosphere
+  const atm = ctx.createRadialGradient(cx,cy,R*0.96,cx,cy,R*1.1);
+  atm.addColorStop(0,'rgba(100,170,230,0.1)'); atm.addColorStop(1,'transparent');
+  ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx,cy,R*1.1,0,6.28); ctx.fill();
+
+  // Moon
+  const moonA = t*0.45;
+  const moonDist = R*2;
+  const moonX = cx+Math.cos(moonA)*moonDist;
+  const moonY = cy+Math.sin(moonA)*moonDist*0.3;
+  drawGradBody(ctx, moonX, moonY, R*0.14, '#c4c8cc', '#909498', '#606468');
+
+  // Orbit trace
+  drawOrbit(ctx, cx, cy, moonDist, moonDist*0.3, 'rgba(176,184,192,0.04)');
+}
+
+// ═══════════════════════════════════════════
+// ANIMATION ORCHESTRATOR
+// ═══════════════════════════════════════════
+const animFns = [anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8, anim9, anim10, anim11];
+const sceneEls = Array.from(document.querySelectorAll('.scene'));
+const active = new Set();
+
+const obs = new IntersectionObserver(entries => {
+  for (const e of entries) {
+    const idx = sceneEls.indexOf(e.target);
+    if (e.isIntersecting) { active.add(idx); e.target.classList.add('visible'); }
+    else { active.delete(idx); }
+  }
+}, { threshold: 0.08 });
+
+sceneEls.forEach(s => obs.observe(s));
+
+(function loop() {
+  const t = performance.now() * 0.001;
+  for (const idx of active) {
+    if (animFns[idx]) animFns[idx](t);
+  }
+  requestAnimationFrame(loop);
+})();
+
+window.addEventListener('resize', () => {
+  const t = performance.now()*0.001;
+  for (const idx of active) { if (animFns[idx]) animFns[idx](t); }
+});
+</script>
 </body>
 </html>
