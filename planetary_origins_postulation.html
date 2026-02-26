@@ -486,8 +486,8 @@ function anim2(t) {
 
   for (const p of P) {
     const a = p.au*scale;
-    const eccVis = p.e * 6; // exaggerated
-    const b = a*(1-eccVis);
+    const eccVis = p.e * 3; // exaggerated but safe
+    const b = Math.max(a*(1-eccVis), a*0.5);
     const off = a*eccVis*0.5;
 
     ctx.strokeStyle = p.c+'30'; ctx.lineWidth = 0.7;
