@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seeth Flyby Anomaly & Bloom Medium Response</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #fff;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--purple);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  .subtitle a { color: var(--accent); text-decoration: none; }
+  .subtitle a:hover { text-decoration: underline; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .derivation {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.5;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 1rem 0;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #21262d;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+  }
+
+  tr:hover td { background: rgba(88,166,255,0.04); }
+
+  .match { color: var(--green); }
+  .partial { color: var(--orange); }
+  .density { color: var(--purple); }
+  .null { color: var(--text-dim); }
+
+  .regime-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  .regime-primary { background: rgba(63,185,80,0.15); color: var(--green); }
+  .regime-density { background: rgba(188,140,255,0.15); color: var(--purple); }
+  .regime-null    { background: rgba(139,148,158,0.15); color: var(--text-dim); }
+
+  canvas {
+    width: 100%;
+    height: 300px;
+    margin: 1rem 0;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+  }
+
+  .controls label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .controls input[type="range"] {
+    width: 200px;
+    accent-color: var(--accent);
+  }
+
+  .controls .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    min-width: 80px;
+  }
+
+  .eq {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    color: #fff;
+    padding: 1rem;
+    margin: 1rem 0;
+    background: rgba(88,166,255,0.06);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+  }
+
+  .note {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 0.5rem 0;
+  }
+
+  .fork-table td:first-child { font-weight: 600; }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab {
+    padding: 0.6rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    color: var(--text-dim);
+    background: var(--bg);
+    transition: all 0.15s;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    background: var(--surface);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<h1>Seeth Flyby Anomaly & Bloom Medium Response</h1>
+<p class="subtitle">
+  ΞĐ (Seeth) Framework · Joe William Garrett · VaultSync Solutions Inc.<br>
+  <a href="https://zenodo.org/communities/dso-framework">Zenodo</a> ·
+  <a href="https://garrjo.github.io/dsoframework">DSO Framework</a> ·
+  Python script: <a href="seeth_flyby_bloom.py">seeth_flyby_bloom.py</a>
+</p>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="showTab('flyby')">Flyby Anomaly</div>
+  <div class="tab" onclick="showTab('bloom')">Bloom / Π Response</div>
+  <div class="tab" onclick="showTab('fork')">The Fork</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 1: FLYBY ANOMALY -->
+<!-- ============================================================ -->
+<div id="flyby" class="tab-content active">
+<div class="card">
+<h2>K = 2ωR/c — Derived, Not Fitted</h2>
+
+<div class="derivation" id="derivation-output"></div>
+
+<div class="eq">ΔV = V∞ × K × (cos δ_in − cos δ_out) + ΔV_density</div>
+
+<p class="note">
+Two-regime model: primary rotational coupling dominates when |Δcos| is large.
+N-body density overlap correction dominates when |Δcos| ≈ 0.
+Anderson's single K absorbed both effects — that's why it worked for some flybys and failed for others.
+</p>
+
+<h3>Full Earth Flyby Set</h3>
+<table id="flyby-table">
+  <thead>
+    <tr>
+      <th>Flyby</th><th>Date</th><th>V∞</th><th>δ_in</th><th>δ_out</th>
+      <th>Δcos</th><th>Seeth</th><th>Observed</th><th>Regime</th>
+    </tr>
+  </thead>
+  <tbody id="flyby-body"></tbody>
+</table>
+
+<h3>Worked Example: Galileo I</h3>
+<div class="derivation" id="worked-example"></div>
+
+<h3>Planetary Universality</h3>
+<table id="planet-table">
+  <thead><tr><th>Body</th><th>ω (rad/s)</th><th>R (m)</th><th>V_surf (m/s)</th><th>K</th></tr></thead>
+  <tbody id="planet-body"></tbody>
+</table>
+<p class="note">Jupiter flybys should show the largest effect: K_Jupiter ≈ 27× K_Earth.</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 2: BLOOM / Π RESPONSE -->
+<!-- ============================================================ -->
+<div id="bloom" class="tab-content">
+<div class="card">
+<h2>Bloom Medium Response — Drude Metal</h2>
+
+<h3>Symbol Mapping</h3>
+<table>
+<thead><tr><th>RS Symbol</th><th>Bloom/Seeth</th><th>Physical Meaning</th></tr></thead>
+<tbody>
+<tr><td>m²_V</td><td>ω²_bloom</td><td>Bloom resonance at this cascade level</td></tr>
+<tr><td>ℜΠ(ω)</td><td>ω² × χ_D(ω)</td><td>Reactive shift from D-plane (screening)</td></tr>
+<tr><td>ℑΠ(ω)</td><td>ω × Γ_bloom(ω)</td><td>O-plane cost (expression abundance, not loss)</td></tr>
+<tr><td>κ²</td><td>g²_overlap</td><td>Base gradient overlap coupling</td></tr>
+<tr><td>κ²_T,L(ω)</td><td>g²_eff(ω)</td><td>Effective coupling after medium response</td></tr>
+</tbody>
+</table>
+
+<h3>Aluminum Drude Model: ℜΠ and ℑΠ vs Frequency</h3>
+<canvas id="bloom-canvas"></canvas>
+<div class="controls">
+  <label>Damping γ:</label>
+  <input type="range" id="gamma-slider" min="12" max="16" step="0.1" value="14.09">
+  <span class="val" id="gamma-val">1.22e14</span>
+</div>
+
+<h3>Frequency Response Table</h3>
+<table id="bloom-table">
+  <thead><tr><th>Regime</th><th>ω (rad/s)</th><th>ℜΠ / ω²_p</th><th>ℑΠ / ω²_p</th><th>Bloom Interpretation</th></tr></thead>
+  <tbody id="bloom-body"></tbody>
+</table>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 3: THE FORK -->
+<!-- ============================================================ -->
+<div id="fork" class="tab-content">
+<div class="card">
+<h2>The Fork: Anisotropy Under Rotation</h2>
+
+<p>Standard particle mixing: κ²_T and κ²_L are fixed by Lorentz structure. Rotating the medium relative to the gradient source does <strong>not</strong> change the effective coupling.</p>
+
+<p>Bloom: the gradient has <strong>orientation</strong>. The D-plane has a preferred direction set by the dominant mass. Rotating the measurement axis changes the effective coupling.</p>
+
+<div class="eq">
+κ²_eff(ω, θ) = κ² × m⁴_V / [(m²_V − ℜΠ × f(θ))² + (ℑΠ × g(θ))²]<br>
+f(θ) = cos²θ + (1/γ) sin²θ &nbsp;&nbsp;|&nbsp;&nbsp; g(θ) = 1 + σ₅ sin(2θ)
+</div>
+
+<h3>Angular Dependence</h3>
+<canvas id="fork-canvas"></canvas>
+<div class="controls">
+  <label>Angle θ:</label>
+  <input type="range" id="theta-slider" min="0" max="90" step="1" value="0">
+  <span class="val" id="theta-val">0°</span>
+  <span class="val" id="ftheta-val">f(θ) = 1.000</span>
+  <span class="val" id="gtheta-val">g(θ) = 1.000</span>
+</div>
+
+<table>
+<thead><tr><th>θ</th><th>f(θ)</th><th>g(θ)</th><th>ℜΠ effect</th><th>ℑΠ effect</th></tr></thead>
+<tbody id="fork-body"></tbody>
+</table>
+
+<h3>The Experiment</h3>
+<p>Put your ABAB material on a rotating mount. Measure effective coupling vs orientation relative to the local gravitational vertical.</p>
+<table class="fork-table">
+<tr><td>θ = 0° (parallel)</td><td>Maximum reactive shift (strong screening)</td></tr>
+<tr><td>θ = 90° (perpendicular)</td><td>Minimum reactive shift (weak screening)</td></tr>
+<tr><td>θ = 45° (diagonal)</td><td>Maximum dissipative cost (peak O transaction)</td></tr>
+</table>
+<p style="margin-top:1rem"><strong>Particle mixing says:</strong> no orientation dependence.<br>
+<strong>Bloom says:</strong> cos²θ reactive + sin(2θ) dissipative. That's the fork.</p>
+</div>
+</div>
+
+<script>
+// =================================================================
+// CONSTANTS
+// =================================================================
+const C = 2.99792458e8;
+const OMEGA_E = 7.2921150e-5;
+const R_E = 6.371e6;
+const PHI = (1 + Math.sqrt(5)) / 2;
+const PSI = 1 / PHI;
+const SIGMA5 = Math.pow(PSI, 5);
+const GAMMA = 2 + SIGMA5;
+
+const K = 2 * OMEGA_E * R_E / C;
+const K_ANDERSON = 3.099e-6;
+
+// =================================================================
+// FLYBY DATA
+// =================================================================
+const FLYBYS = [
+  {name:"Galileo I",  date:"Dec 1990", Vinf:8949, di:12.52,  doo:-34.17, hp:960,  obs:3.92,  regime:"Primary"},
+  {name:"Galileo II", date:"Dec 1992", Vinf:8877, di:-4.99,  doo:-4.87,  hp:303,  obs:-4.60, regime:"Density overlap"},
+  {name:"NEAR",       date:"Jan 1998", Vinf:6851, di:-20.76, doo:-71.96, hp:539,  obs:13.46, regime:"Primary"},
+  {name:"Cassini",    date:"Aug 1999", Vinf:16010,di:-12.92, doo:-4.99,  hp:1175, obs:-2.00, regime:"Density overlap"},
+  {name:"Rosetta I",  date:"Mar 2005", Vinf:3863, di:-2.81,  doo:-34.29, hp:1956, obs:1.80,  regime:"Primary"},
+  {name:"MESSENGER",  date:"Aug 2005", Vinf:4056, di:31.44,  doo:-31.92, hp:2347, obs:0.02,  regime:"Density overlap"},
+  {name:"Rosetta II", date:"Nov 2007", Vinf:9162, di:-29.00, doo:-34.00, hp:5322, obs:0.00,  regime:"High alt null"},
+  {name:"Rosetta III",date:"Nov 2009", Vinf:9392, di:-3.70,  doo:-4.30,  hp:2483, obs:0.00,  regime:"Symmetric null"},
+  {name:"Juno",       date:"Oct 2013", Vinf:9884, di:-13.60, doo:-31.50, hp:559,  obs:0.00,  regime:"Continuous track"},
+];
+
+const PLANETS = [
+  {name:"Earth",  w:7.2921150e-5, R:6.371e6},
+  {name:"Jupiter",w:1.7585e-4,    R:7.1492e7},
+  {name:"Saturn", w:1.6379e-4,    R:6.0268e7},
+  {name:"Mars",   w:7.0882e-5,    R:3.3895e6},
+  {name:"Venus",  w:2.9924e-7,    R:6.0518e6},
+];
+
+// =================================================================
+// TAB SWITCHING
+// =================================================================
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'bloom') drawBloom();
+  if (id === 'fork') drawFork();
+}
+
+// =================================================================
+// FLYBY TABLE
+// =================================================================
+function buildFlybyTable() {
+  const Vs = OMEGA_E * R_E;
+
+  document.getElementById('derivation-output').textContent =
+`V_surface  = ωR = ${OMEGA_E.toExponential(7)} × ${R_E.toExponential(4)} = ${Vs.toFixed(2)} m/s
+K_seeth    = 2 × V_surface / c = ${K.toExponential(10)}
+K_anderson = ${K_ANDERSON.toExponential(10)}  (fitted — PRL 100:091102)
+Ratio      = ${(K/K_ANDERSON).toFixed(6)}
+
+Four significant figures. Zero free parameters. Zero fitting.`;
+
+  const tbody = document.getElementById('flyby-body');
+  FLYBYS.forEach(fb => {
+    const di = fb.di * Math.PI / 180;
+    const doo_r = fb.doo * Math.PI / 180;
+    const cosDiff = Math.cos(di) - Math.cos(doo_r);
+    const dV = fb.Vinf * K * cosDiff * 1e3;
+
+    const regimeClass = fb.regime.includes("Primary") ? "regime-primary" :
+                        fb.regime.includes("null") || fb.regime.includes("track") ? "regime-null" : "regime-density";
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${fb.name}</td><td>${fb.date}</td><td>${fb.Vinf}</td>
+      <td>${fb.di > 0 ? '+' : ''}${fb.di.toFixed(2)}°</td>
+      <td>${fb.doo > 0 ? '+' : ''}${fb.doo.toFixed(2)}°</td>
+      <td>${cosDiff >= 0 ? '+' : ''}${cosDiff.toFixed(4)}</td>
+      <td>${dV >= 0 ? '+' : ''}${dV.toFixed(2)}</td>
+      <td>${fb.obs >= 0 ? '+' : ''}${fb.obs.toFixed(2)}</td>
+      <td><span class="regime-tag ${regimeClass}">${fb.regime}</span></td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Worked example
+  const di = 12.52 * Math.PI / 180;
+  const doo_r = -34.17 * Math.PI / 180;
+  const cosDiff = Math.cos(di) - Math.cos(doo_r);
+  const dV = K * 8949 * cosDiff * 1e3;
+
+  document.getElementById('worked-example').textContent =
+`Galileo I — December 8, 1990
+
+K         = 2 × ${OMEGA_E.toExponential(7)} × ${R_E.toExponential(4)} / ${C.toExponential(8)}
+          = ${K.toExponential(10)}
+
+V∞        = 8949 m/s
+δ_in      = 12.52°   → cos(δ_in)  = ${Math.cos(di).toFixed(6)}
+δ_out     = -34.17°  → cos(δ_out) = ${Math.cos(doo_r).toFixed(6)}
+Δcos      = ${cosDiff.toFixed(6)}
+
+ΔV_primary = 8949 × ${K.toExponential(6)} × ${cosDiff.toFixed(6)}
+           = ${dV >= 0 ? '+' : ''}${dV.toFixed(4)} mm/s
+
+Observed   = +3.92 ± 0.08 mm/s
+Residual   = ${(dV - 3.92) >= 0 ? '+' : ''}${(dV - 3.92).toFixed(4)} mm/s → density overlap correction`;
+
+  // Planets
+  const ptbody = document.getElementById('planet-body');
+  PLANETS.forEach(p => {
+    const Vsurf = Math.abs(p.w) * p.R;
+    const Kp = 2 * Vsurf / C;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${p.name}</td><td>${p.w.toExponential(4)}</td>
+      <td>${p.R.toExponential(4)}</td><td>${Vsurf.toFixed(2)}</td>
+      <td>${Kp.toExponential(6)}</td>`;
+    ptbody.appendChild(tr);
+  });
+}
+
+// =================================================================
+// BLOOM RESPONSE
+// =================================================================
+function drawBloom() {
+  const canvas = document.getElementById('bloom-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.offsetWidth * 2;
+  const H = canvas.height = 600;
+  ctx.scale(1, 1);
+
+  const omega_p = 1.37e16;
+  const gammaLog = parseFloat(document.getElementById('gamma-slider').value);
+  const gamma_d = Math.pow(10, gammaLog);
+  document.getElementById('gamma-val').textContent = gamma_d.toExponential(2);
+
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, W, H);
+
+  const pad = {l: 80, r: 30, t: 30, b: 50};
+  const pw = W - pad.l - pad.r;
+  const ph = H - pad.t - pad.b;
+
+  // Frequency range: 1e13 to 1e17
+  const logMin = 13, logMax = 17;
+  const toX = (logW) => pad.l + (logW - logMin) / (logMax - logMin) * pw;
+
+  // Compute
+  const N = 500;
+  let reData = [], imData = [];
+  let reMin = Infinity, reMax = -Infinity, imMin = 0, imMax = -Infinity;
+
+  for (let i = 0; i < N; i++) {
+    const logW = logMin + (logMax - logMin) * i / (N - 1);
+    const w = Math.pow(10, logW);
+    const denom = w * w * w * w + gamma_d * gamma_d * w * w;
+    const Re = omega_p * omega_p * w * w / denom;
+    const Im = omega_p * omega_p * gamma_d * w / denom;
+    reData.push({x: toX(logW), v: Re});
+    imData.push({x: toX(logW), v: Im});
+    reMin = Math.min(reMin, Re);
+    reMax = Math.max(reMax, Re);
+    imMax = Math.max(imMax, Im);
+  }
+
+  // Normalize to plot range
+  const yRange = Math.max(Math.abs(reMin), reMax, imMax) * 1.1;
+  const toY_re = (v) => pad.t + ph / 2 - (v / yRange) * ph / 2;
+  const toY_im = (v) => pad.t + ph - (v / yRange) * ph;
+
+  // Grid
+  ctx.strokeStyle = '#21262d';
+  ctx.lineWidth = 1;
+  for (let log = logMin; log <= logMax; log++) {
+    const x = toX(log);
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ph); ctx.stroke();
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '20px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('10^' + log, x, pad.t + ph + 35);
+  }
+
+  // Zero line
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(pad.l, toY_re(0)); ctx.lineTo(pad.l + pw, toY_re(0)); ctx.stroke();
+
+  // ω_p marker
+  const xWp = toX(Math.log10(omega_p));
+  ctx.strokeStyle = '#d29922';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath(); ctx.moveTo(xWp, pad.t); ctx.lineTo(xWp, pad.t + ph); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#d29922';
+  ctx.font = '18px JetBrains Mono';
+  ctx.fillText('ω_p', xWp, pad.t - 5);
+
+  // ℜΠ curve
+  ctx.strokeStyle = '#58a6ff';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  reData.forEach((d, i) => { i === 0 ? ctx.moveTo(d.x, toY_re(d.v)) : ctx.lineTo(d.x, toY_re(d.v)); });
+  ctx.stroke();
+
+  // ℑΠ curve
+  ctx.strokeStyle = '#f85149';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  imData.forEach((d, i) => { i === 0 ? ctx.moveTo(d.x, toY_im(d.v)) : ctx.lineTo(d.x, toY_im(d.v)); });
+  ctx.stroke();
+
+  // Labels
+  ctx.font = '22px JetBrains Mono';
+  ctx.fillStyle = '#58a6ff';
+  ctx.fillText('ℜΠ (reactive shift)', pad.l + 10, pad.t + 25);
+  ctx.fillStyle = '#f85149';
+  ctx.fillText('ℑΠ (dissipative cost)', pad.l + 10, pad.t + 50);
+
+  // Bloom table
+  const btbody = document.getElementById('bloom-body');
+  btbody.innerHTML = '';
+  const testFreqs = [
+    {label: "IR", w: 1e13, bloom: "D-plane: opaque"},
+    {label: "Near-IR", w: 1e14, bloom: "D-plane: concentrating"},
+    {label: "Visible", w: 1e15, bloom: "D/Ω transition"},
+    {label: "ω_p/2", w: omega_p/2, bloom: "Approaching boundary"},
+    {label: "ω_p", w: omega_p, bloom: "Cascade boundary: max O cost"},
+    {label: "2×ω_p", w: omega_p*2, bloom: "Ω-plane: propagating"},
+    {label: "X-ray", w: 1e17, bloom: "Ω-plane: transparent"},
+  ];
+  testFreqs.forEach(tf => {
+    const denom = tf.w**4 + gamma_d**2 * tf.w**2;
+    const Re = omega_p**2 * tf.w**2 / denom;
+    const Im = omega_p**2 * gamma_d * tf.w / denom;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${tf.label}</td><td>${tf.w.toExponential(2)}</td>
+      <td>${Re.toExponential(4)}</td><td>${Im.toExponential(4)}</td>
+      <td>${tf.bloom}</td>`;
+    btbody.appendChild(tr);
+  });
+}
+
+// =================================================================
+// FORK — ANISOTROPY
+// =================================================================
+function drawFork() {
+  const canvas = document.getElementById('fork-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.offsetWidth * 2;
+  const H = canvas.height = 500;
+
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, W, H);
+
+  const pad = {l: 80, r: 30, t: 30, b: 50};
+  const pw = W - pad.l - pad.r;
+  const ph = H - pad.t - pad.b;
+
+  // Compute f(θ) and g(θ) from 0 to 90
+  const N = 91;
+  let fData = [], gData = [];
+  for (let deg = 0; deg < N; deg++) {
+    const theta = deg * Math.PI / 180;
+    const f = Math.cos(theta)**2 + (1/GAMMA) * Math.sin(theta)**2;
+    const g = 1 + SIGMA5 * Math.sin(2 * theta);
+    fData.push(f);
+    gData.push(g);
+  }
+
+  const yMin = 0.4, yMax = 1.15;
+  const toX = (deg) => pad.l + deg / 90 * pw;
+  const toY = (v) => pad.t + ph - (v - yMin) / (yMax - yMin) * ph;
+
+  // Grid
+  ctx.strokeStyle = '#21262d';
+  ctx.lineWidth = 1;
+  ctx.font = '20px JetBrains Mono';
+  ctx.fillStyle = '#8b949e';
+  ctx.textAlign = 'center';
+  for (let deg = 0; deg <= 90; deg += 15) {
+    const x = toX(deg);
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ph); ctx.stroke();
+    ctx.fillText(deg + '°', x, pad.t + ph + 35);
+  }
+
+  // f(θ) curve
+  ctx.strokeStyle = '#58a6ff';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  fData.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  ctx.stroke();
+
+  // g(θ) curve
+  ctx.strokeStyle = '#f85149';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  gData.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  ctx.stroke();
+
+  // 1.0 line (particle mixing prediction: flat)
+  ctx.strokeStyle = '#3fb950';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 6]);
+  ctx.beginPath(); ctx.moveTo(pad.l, toY(1)); ctx.lineTo(pad.l + pw, toY(1)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font = '22px JetBrains Mono';
+  ctx.fillStyle = '#58a6ff';
+  ctx.textAlign = 'left';
+  ctx.fillText('f(θ) — reactive shift', pad.l + 10, pad.t + 25);
+  ctx.fillStyle = '#f85149';
+  ctx.fillText('g(θ) — dissipative cost', pad.l + 10, pad.t + 50);
+  ctx.fillStyle = '#3fb950';
+  ctx.fillText('Particle mixing: flat (no θ dependence)', pad.l + 10, pad.t + 75);
+
+  // Slider highlight
+  const thetaDeg = parseInt(document.getElementById('theta-slider').value);
+  const theta = thetaDeg * Math.PI / 180;
+  const fv = Math.cos(theta)**2 + (1/GAMMA) * Math.sin(theta)**2;
+  const gv = 1 + SIGMA5 * Math.sin(2 * theta);
+  document.getElementById('theta-val').textContent = thetaDeg + '°';
+  document.getElementById('ftheta-val').textContent = 'f(θ) = ' + fv.toFixed(4);
+  document.getElementById('gtheta-val').textContent = 'g(θ) = ' + gv.toFixed(4);
+
+  const xMark = toX(thetaDeg);
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(xMark, pad.t); ctx.lineTo(xMark, pad.t + ph); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Fork table
+  const ftbody = document.getElementById('fork-body');
+  ftbody.innerHTML = '';
+  for (let deg = 0; deg <= 90; deg += 15) {
+    const th = deg * Math.PI / 180;
+    const f = Math.cos(th)**2 + (1/GAMMA) * Math.sin(th)**2;
+    const g = 1 + SIGMA5 * Math.sin(2 * th);
+    const reNote = deg === 0 ? 'Maximum' : deg === 90 ? 'Minimum' : '';
+    const imNote = deg === 45 ? 'Maximum' : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${deg}°</td><td>${f.toFixed(6)}</td><td>${g.toFixed(6)}</td>
+      <td>${reNote}</td><td>${imNote}</td>`;
+    ftbody.appendChild(tr);
+  }
+}
+
+// =================================================================
+// EVENT LISTENERS
+// =================================================================
+document.getElementById('gamma-slider').addEventListener('input', drawBloom);
+document.getElementById('theta-slider').addEventListener('input', drawFork);
+
+// =================================================================
+// INIT
+// =================================================================
+buildFlybyTable();
+setTimeout(drawBloom, 100);
+setTimeout(drawFork, 100);
+</script>
+</body>
+</html>
